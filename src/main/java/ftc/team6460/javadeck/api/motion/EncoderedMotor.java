@@ -31,7 +31,6 @@ import ftc.team6460.javadeck.api.peripheral.SensorPeripheral;
 import ftc.team6460.javadeck.api.safety.SafetyGroup;
 import ftc.team6460.javadeck.api.safety.SafetyPeripheral;
 
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -62,6 +61,7 @@ public abstract class EncoderedMotor implements EffectorPeripheral<Double>, Sens
      * Sets the speed of the motor to the new value.
      * The input may specify the speed in an implementation-dependent unit, but a given robot platform should implement this so that all motors of the same type will
      * cause the same linear motion after their gearing is considered. This may require instances of this to have fields describing any gearing or other considerations.
+     * When overridden, a call to super() is required for proper safety control.
      *
      * @param input The value to write.
      * @throws InterruptedException             If interrupted waiting for the write to finish.
@@ -69,21 +69,84 @@ public abstract class EncoderedMotor implements EffectorPeripheral<Double>, Sens
      * @throws PeripheralInoperableException    If the effector is inoperable.
      */
     @Override
-    public abstract void writeFast(Double input) throws InterruptedException, PeripheralCommunicationException, PeripheralInoperableException;
+    public void writeFast(Double input) throws InterruptedException, PeripheralCommunicationException, PeripheralInoperableException {
+        synchronized (this) {
+            if (System.nanoTime() < earliestReactivation) {
+                return;
+            }
+            this.currentVelocity = input;
+            this.doWrite(input);
+        }
+    }
+
+    protected double currentVelocity = 0.0;
+
 
     /**
-     * Resets the encoder to zero.
+     * Actually write the value to the device.
+     *
+     * @param val The value to write
+     */
+    protected abstract void doWrite(double val);
+
+    /**
+     * Resets the encoder to zero. This method should not be called after a time less
      *
      * @throws InterruptedException             If interrupted.
      * @throws PeripheralCommunicationException If communication failed.
      * @throws PeripheralInoperableException    If encoder inoperable.
      */
     public void resetEncoder() throws InterruptedException, PeripheralCommunicationException, PeripheralInoperableException {
-        this.calibrate(0.0, null);
+        synchronized (this) {
+            this.calibrate(0.0, null);
+            this.resetSafety();
+        }
     }
 
-    private AtomicLong millisLastMovement = new AtomicLong(System.currentTimeMillis());
-    private AtomicLong encoderLastMovement = new AtomicLong(Double.doubleToLongBits(0.0));
+    public final double antiStallThreshold;
+    public final double antiStallTimeout;
+    public final double maxStallPower;
+    public final int encoderDirection;
+
+    /**
+     * Constructs a new encodered motor.
+     *
+     * @param safetyGroup        The safety group to join.
+     * @param antiStallThreshold The minimum encoder distance that is considered a non-stalled motor.
+     * @param antiStallTimeout   How long encoder motion can remain under the threshold before a stall is considered, nanoseconds.
+     * @param maxStallPower      The maximum power at which stall prevention will not be performed.
+     * @param encoderDirection   +1 if a positive power will cause the encoder reading to increase, -1 otherwise.
+     */
+    public EncoderedMotor(SafetyGroup safetyGroup, double antiStallThreshold, double antiStallTimeout, double maxStallPower, int encoderDirection) {
+
+        this.safetyGroup = safetyGroup;
+
+        this.antiStallThreshold = antiStallThreshold;
+        this.antiStallTimeout = antiStallTimeout;
+        this.maxStallPower = maxStallPower;
+        this.encoderDirection = encoderDirection;
+        safetyGroup.registerEffector(this);
+    }
+
+    /**
+     * Constructs a new encodered motor.
+     *
+     * @param antiStallThreshold The minimum encoder distance that is considered a non-stalled motor.
+     * @param antiStallTimeout   How long encoder motion can remain under the threshold before a stall is considered, nanoseconds.
+     * @param maxStallPower      The maximum power at which stall prevention will not be performed.
+     * @param encoderDirection   +1 if a positive power will cause the encoder reading to increase, -1 otherwise.
+     */
+    public EncoderedMotor(double antiStallThreshold, double antiStallTimeout, double maxStallPower, int encoderDirection) {
+
+        this.antiStallThreshold = antiStallThreshold;
+        this.antiStallTimeout = antiStallTimeout;
+        this.maxStallPower = maxStallPower;
+        this.encoderDirection = encoderDirection;
+    }
+
+    private double encoderLastTime = System.nanoTime();
+
+    private double encoderLastPosition = 0.0;
     private AtomicReference<EncoderControl> controlType = new AtomicReference<>(EncoderControl.CTRL_NONE);
 
     public void setControlType(EncoderControl type) {
@@ -92,20 +155,59 @@ public abstract class EncoderedMotor implements EffectorPeripheral<Double>, Sens
 
     @Override
     public void setup() {
-        millisLastMovement.set(System.currentTimeMillis());
+        encoderLastTime = System.nanoTime();
+    }
+
+    /*package-private*/ void resetSafety() {
+        try {
+            encoderLastPosition = this.read(null);
+            encoderLastTime = System.nanoTime();
+        } catch (Throwable e) {
+            // noop
+        }
     }
 
     @Override
     public boolean checkSafety() {
-        if (controlType.get() != EncoderControl.CTRL_STALL) return true;
-        double oldVal = Double.longBitsToDouble(encoderLastMovement.get());
-        try {
-            double newVal = this.read(null);
-            return false; //todo
-        } catch (Throwable e) {
-            return false;
+
+        if (this.earliestReactivation > System.nanoTime()) {
+            try {
+                encoderLastPosition = this.read(null);
+                encoderLastTime = System.nanoTime();
+            } catch (Throwable e) {
+                // noop
+            }
+            return true; // no new safety issue
         }
 
+        synchronized (this) {
+            if (controlType.get() != EncoderControl.CTRL_STALL) return true;
+            if (this.currentVelocity < maxStallPower) return true;
+            if (System.nanoTime() - encoderLastTime < antiStallTimeout) {
+                return true;
+            }
+            try {
+                double newVal = this.read(null);
+                if ((newVal - encoderLastPosition) / Math.signum(currentVelocity / encoderDirection) > antiStallThreshold) {
+                    encoderLastPosition = newVal;
+                    encoderLastTime = System.nanoTime();
+                    return true;
+                } else {
+                    return false;
+                }
+            } catch (Throwable e) {
+                return false;
+            }
+        }
+    }
+
+
+    private volatile long earliestReactivation = 0;
+
+    @Override
+    public void safetyShutdown(long nanos) throws InterruptedException, PeripheralCommunicationException, PeripheralInoperableException {
+        this.writeFast(0.0);
+        this.earliestReactivation = System.nanoTime() + nanos;
     }
 
     /**
@@ -114,7 +216,7 @@ public abstract class EncoderedMotor implements EffectorPeripheral<Double>, Sens
     @Override
     public void loop() {
         if (!this.checkSafety()) try {
-            safetyGroup.safetyShutdown();
+            safetyGroup.safetyShutdown(1_000_000_000); // default
         } catch (Throwable e) {
             e.printStackTrace();
         }

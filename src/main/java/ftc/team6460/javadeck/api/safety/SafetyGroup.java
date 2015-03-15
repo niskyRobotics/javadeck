@@ -34,24 +34,27 @@ import java.util.concurrent.ConcurrentSkipListSet;
 
 /**
  * Represents a group of devices that should shut down if one of them fails, or if an external trigger is triggered.
+ * <p/>
+ * Safety shutdowns remain in place for as long as the timeout specified.
  */
 public class SafetyGroup implements EffectorPeripheral<Void> {
     private final Callable<Void> onFaultCallable;
     private final SafetyShutdownFailureAction failureAction;
+    private final long nanosForShutdown;
 
     @Override
     public void write(Void input) throws InterruptedException, PeripheralCommunicationException, PeripheralInoperableException {
-        throw new UnsupportedOperationException("Cannot write to a safety group");
+        throw new UnsupportedOperationException("Cannot write directly to a safety group");
     }
 
     @Override
     public void writeFast(Void input) throws InterruptedException, PeripheralCommunicationException, PeripheralInoperableException {
-        throw new UnsupportedOperationException("Cannot write to a safety group");
+        throw new UnsupportedOperationException("Cannot write directly to a safety group");
     }
 
     @Override
-    public void safetyShutdown() throws InterruptedException, PeripheralCommunicationException, PeripheralInoperableException {
-        safetyShutdown0();
+    public void safetyShutdown(long nanos) throws InterruptedException, PeripheralCommunicationException, PeripheralInoperableException {
+        safetyShutdown0(nanos);
     }
 
     @Override
@@ -63,7 +66,7 @@ public class SafetyGroup implements EffectorPeripheral<Void> {
     public void loop() {
         for (SafetyPeripheral sens : sensors) {
             if (!sens.checkSafety()) {
-                safetyShutdown0();
+                safetyShutdown0(this.nanosForShutdown);
                 return;
             }
         }
@@ -78,15 +81,17 @@ public class SafetyGroup implements EffectorPeripheral<Void> {
         public void onFail(EffectorPeripheral<?> effector, Throwable error);
     }
 
-    public SafetyGroup(Callable<Void> onFaultCallable, SafetyShutdownFailureAction failureAction) {
+    public SafetyGroup(Callable<Void> onFaultCallable, SafetyShutdownFailureAction failureAction, long timeout) {
         this.onFaultCallable = onFaultCallable;
         this.failureAction = failureAction;
+        nanosForShutdown = timeout;
     }
 
-    public SafetyGroup(Callable<Void> onFaultCallable) {
+    public SafetyGroup(Callable<Void> onFaultCallable, long timeout) {
         this.onFaultCallable = onFaultCallable;
         this.failureAction = null;
 
+        nanosForShutdown = timeout;
     }
 
     private final Set<EffectorPeripheral<?>> members = new ConcurrentSkipListSet<>();
@@ -111,16 +116,21 @@ public class SafetyGroup implements EffectorPeripheral<Void> {
     /**
      * Call to signal a safety fault. All effectors in this group are immediately put to a safe state.
      */
-    protected void safetyShutdown0() {
+    protected void safetyShutdown0(long nanos) {
 
         for (EffectorPeripheral<?> eff : members) {
             try {
-                eff.safetyShutdown();
+                eff.safetyShutdown(nanos);
             } catch (Throwable t) {
                 if (this.failureAction != null) {
                     failureAction.onFail(eff, t);
                 }
             }
+        }
+        try {
+            onFaultCallable.call();
+        } catch (Exception e) {
+            // noop for now
         }
 
 
