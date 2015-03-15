@@ -24,6 +24,8 @@
 
 package ftc.team6460.javadeck.api.peripheral;
 
+import ftc.team6460.javadeck.api.safety.SafetyGroup;
+
 /**
  * Describes a peripheral that can output an effect.
  *
@@ -50,4 +52,19 @@ public interface EffectorPeripheral<T> extends RobotPeripheral {
      * @throws PeripheralInoperableException    If the effector is inoperable.
      */
     public void writeFast(T input) throws InterruptedException, PeripheralCommunicationException, PeripheralInoperableException;
+
+    /**
+     * Shut down to a known safe state, immediately. The effector may or may not be operable after this operation.
+     * <p/>
+     * If any exception is thrown, the state of the effector is unknown. Depending on its role, the program may take other actions.
+     */
+    public void safetyShutdown() throws InterruptedException, PeripheralCommunicationException, PeripheralInoperableException;
+
+    /**
+     * Adds this effector to the given safety group. This method may be called multiple times. This should establish a reference to that group, so that if this effector
+     * is found to be in an unsafe state, the groups it belongs to can be notified.
+     *
+     * @param grp
+     */
+    public void addSafetyGroup(SafetyGroup grp);
 }

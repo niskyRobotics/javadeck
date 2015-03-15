@@ -22,15 +22,19 @@
  * THE SOFTWARE.
  */
 
-package ftc.team6460.javadeck.api.peripheral;
-
-import ftc.team6460.javadeck.api.Maintainable;
+package ftc.team6460.javadeck.api;
 
 /**
- * An interface describing a peripheral. Specific subinterfaces may be more applicable.
- *
- * @see ftc.team6460.javadeck.api.peripheral.EffectorPeripheral
+ * Describes any object that must have a method called on the main robot event loop.
  */
-public interface RobotPeripheral extends Maintainable {
+public interface Maintainable {
+    /**
+     * Implement any action that must be taken each event loop iteration in this method.
+     */
+    public void loop();
 
+    /**
+     * Implement any one-time actions that should occur as late as possible before this object begins to be maintained by the event loop
+     */
+    public void setup();
 }
