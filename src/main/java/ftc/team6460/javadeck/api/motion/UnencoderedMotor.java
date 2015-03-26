@@ -35,7 +35,8 @@ public abstract class UnencoderedMotor implements EffectorPeripheral<Double> {
     /**
      * Sets the motor speed to the new value. This method should be overridden if it is possible to determine when the motor has spun up to its target speed.
      * The input may specify the speed in an implementation-dependent unit, but a given robot platform should implement this so that all motors of the same type will
-     * cause the same linear motion after their gearing is considered. This may require instances of this to have fields describing any gearing or other considerations.
+     * cause the same linear motion after their gearing is considered. Inconsistent speeds across gearing configurations may break the motion planner.
+     * This may require instances of this to have fields describing any gearing or other considerations.
      *
      * @param input The speed for the motor to reach.
      * @throws InterruptedException                                                  If interrupted waiting for the effector to reach its target value.

@@ -34,9 +34,9 @@ import ftc.team6460.javadeck.api.peripheral.PeripheralInoperableException;
  */
 public abstract class SelfContainedServo implements EffectorPeripheral<SlewedDouble> {
     /**
-     * Sets the servo to the new value. This method should be overridden if it is possible to determine the servo's physical location.
+     * Sets the servo to the new value. This method should be overridden if it is possible to determine the servo's physical location in order to wait for it to reach the goal.
      * The input may specify the position in an implementation-dependent unit, but a given robot platform should implement this so that all servos of the same type will
-     * cause the same angular motion after their gearing is considered. This may require instances of this to have fields describing any gearing or other considerations.
+     * cause the same angular motion after their gearing is considered. This may require subclasses to have fields describing any gearing or other considerations.
      *
      * @param input The position for the servo to reach.
      * @throws InterruptedException                                                  If interrupted waiting for the effector to reach its target value.
@@ -51,7 +51,7 @@ public abstract class SelfContainedServo implements EffectorPeripheral<SlewedDou
     /**
      * Sets the servo to the new value. This method should be overridden if it is possible to determine the servo's physical location.
      * The input may specify the position in an implementation-dependent unit, but a given robot platform should implement this so that all servos of the same type will
-     * cause the same angular motion after their gearing is considered. This may require instances of this to have fields describing any gearing or other considerations.     *
+     * cause the same angular motion after their gearing is considered. This may require subclasses to have fields describing any gearing or other considerations.     *
      *
      * @param input The value to write.
      * @throws InterruptedException             If interrupted waiting for the write to finish.
