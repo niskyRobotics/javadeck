@@ -34,8 +34,9 @@ public interface Sensor {
     /**
      * Returns the likelihood of the robot to be at that specific location in that orientation. 1 means that according to this
      * sensor, the robot is undoubtedly able to be at this point (for example, if a color sensor pointed at the floor is reading blue, then
-     * that means that the return value for any point which is within a blue region should be 1). Advanced implementations may adjust this value
-     * to indicate that the sensor may not be perfectly reliable (for example, to describe a probability distribution for the error in a reading).
+     * that means that the return value for any point which is within a blue region should be 1). 0 means that this position is impossible according to this sensor.
+     * Advanced implementations may adjust this value to indicate that the sensor may not be perfectly reliable
+     * (for example, to describe a probability distribution for the error in a reading).
      *
      * @param x     The robot position, X.
      * @param y     The robot position, Y.
@@ -54,6 +55,12 @@ public interface Sensor {
      * @return The sensor weight here.
      */
     public double getWeight(double x, double y, double theta);
+
+    /**
+     * Returns any meaningful areas at which to suggest to the integrator to focus on for a search. This method is used for
+     * time optimization purposes only.
+     */
+    public Iterable<RobotPosition> getPossibleHotspots();
 
     /**
      * Handles an error in measurement. This will be called after each sensing and positioning iteration.

@@ -24,16 +24,18 @@
 
 package ftc.team6460.javadeck.api.planner;
 
+import java.util.Collections;
+import java.util.Iterator;
+
 /**
  * Interface allowing physical robot to be moved to a new position. Thread-safety is not required.
  */
 public abstract class RobotDrive implements Sensor {
     @Override
     public double getLikelihood(double x, double y, double theta) {
-        return 2 * calculateGaussian(x - currentPosition.getX(),
+        return calculateGaussian(x - currentPosition.getX(),
                 y - currentPosition.getY(),
-                Math.IEEEremainder((theta - currentPosition.getTheta()), 2 * Math.PI)
-        ) - 1;
+                Math.IEEEremainder((theta - currentPosition.getTheta()), 2 * Math.PI));
     }
 
     // calculates a gaussian in 3d around the center
@@ -49,6 +51,11 @@ public abstract class RobotDrive implements Sensor {
     @Override
     public double getWeight(double x, double y, double theta) {
         return this.weight;
+    }
+
+    @Override
+    public Iterable<RobotPosition> getPossibleHotspots() {
+        return Collections.singletonList(currentPosition);
     }
 
     @Override
