@@ -40,10 +40,23 @@ public interface Sensor {
      *
      * @param x     The robot position, X.
      * @param y     The robot position, Y.
-     * @param theta The robot orientation.
      * @return The likelihood to be at this point.
      */
-    public double getLikelihood(double x, double y, double theta);
+    public double getLikelihood(double x, double y);
+
+    /**
+     * Returns the likelihood of the robot to be at that specific location in that orientation. 1 means that according to this
+     * sensor, the robot is undoubtedly able to be at this point (for example, if a color sensor pointed at the floor is reading blue, then
+     * that means that the return value for any point which is within a blue region should be 1). 0 means that this position is impossible according to this sensor.
+     * Advanced implementations may adjust this value to indicate that the sensor may not be perfectly reliable
+     * (for example, to describe a probability distribution for the error in a reading).
+     *
+     * @param x     The robot position, X.
+     * @param y     The robot position, Y.
+     * @param theta The robot orientation, in radians;
+     * @return The likelihood to be at this point.
+     */
+    public double getOrientationLikelihood(double x, double y, double theta);
 
     /**
      * Returns the "weight" of this sensor for a weighted average, at the specific location and orientation specified. For example, a sensor that
@@ -51,10 +64,9 @@ public interface Sensor {
      *
      * @param x     The robot position, X.
      * @param y     The robot position, Y.
-     * @param theta The robot orientation.
      * @return The sensor weight here.
      */
-    public double getWeight(double x, double y, double theta);
+    public double getWeight(double x, double y);
 
     /**
      * Returns any meaningful areas at which to suggest to the integrator to focus on for a search. This method is used for

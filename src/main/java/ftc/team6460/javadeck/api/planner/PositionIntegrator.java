@@ -57,6 +57,7 @@ public class PositionIntegrator {
      */
     private final double islandRemainStrength;
 
+    private final double cX, cY;
 
     private static final double COARSE_SEARCH_STEP = 0.10;
 
@@ -67,6 +68,11 @@ public class PositionIntegrator {
     // F F F F F
     // F F F F F
     private static final int FINE_STEP_SUBDIVISIONS = 5;
+    private static final int FINE_STEPS_IN_EACH_DIRECTION = (int) (FINE_STEP_SUBDIVISIONS / 2);
+
+    private final double firstCoarseVal;
+    private final double fieldX;
+    private final double fieldY;
 
     public PositionIntegrator(Collection<Sensor> sensors, double fieldX, double fieldY) {
         this(sensors, fieldX, fieldY, 2, 2, 0.8, 0.75);
@@ -80,10 +86,24 @@ public class PositionIntegrator {
         this.islandMinAbsolute = islandMinAbsolute;
         this.islandRemainStrength = islandRemainStrength;
         this.sensors.addAll(sensors);
-        double firstCoarseVal = COARSE_SEARCH_STEP / FINE_STEP_SUBDIVISIONS * (Math.floor(FINE_STEP_SUBDIVISIONS / 2));
-        int coarseX = (int) ((fieldX - firstCoarseVal) / COARSE_SEARCH_STEP);
-        int coarseY = (int) ((fieldY - firstCoarseVal) / COARSE_SEARCH_STEP);
+        firstCoarseVal = COARSE_SEARCH_STEP / FINE_STEP_SUBDIVISIONS * (Math.floor(FINE_STEP_SUBDIVISIONS / 2));
+        this.fieldX = fieldX;
+        int coarseX = (int) ((this.fieldX - firstCoarseVal) / COARSE_SEARCH_STEP);
+        this.fieldY = fieldY;
+        int coarseY = (int) ((this.fieldY - firstCoarseVal) / COARSE_SEARCH_STEP);
+        tiles = new Tile[coarseX][coarseY];
+        for (int i = 0; i < coarseX; i++) {
+            for (int j = 0; j < coarseY; j++) {
+                tiles[i][j] = new Tile(FINE_STEP_SUBDIVISIONS);
+            }
+        }
+        this.cX = coarseX;
+        this.cY = coarseY;
     }
+
+    // if too slow, optimize as single-dim array
+    // tiles[coarseX][coarseY]
+    private final /*mutable*/ Tile[][] tiles;
 
     /* Algorithm:
      * 1. Fill search array with Double.NaN
@@ -97,7 +117,98 @@ public class PositionIntegrator {
      * Returns a list of positions, in no particular order, that describes likely robot positions.
      */
     public List<LocationCandidate> getCandidates() {
+
+        for (int x = 0; x < cX; x++) {
+            for (int y = 0; y < cY; y++) {
+                // reference!
+                Tile t = tiles[x][y];
+                t.hasFine = false;
+                t.coarse = calculateWeighted(getDimension(x), getDimension(y));
+
+            }
+        }
+
+        for (Sensor s : sensors) {
+            for (RobotPosition lc : s.getPossibleHotspots()) {
+                fillIn(lc.getX(), lc.getY());
+            }
+        }
+
+
         return null;
+    }
+
+    private double getDimension(int idx) {
+        return idx * COARSE_SEARCH_STEP + firstCoarseVal;
+    }
+
+    private double getFineDimension(int idx, int fine) {
+        return idx * COARSE_SEARCH_STEP + firstCoarseVal + (fine * COARSE_SEARCH_STEP / FINE_STEP_SUBDIVISIONS);
+    }
+
+    // Unit test the crap out of this
+    private int getNearest(double dim) {
+        return (int) Math.round((dim - firstCoarseVal) / COARSE_SEARCH_STEP);
+    }
+
+    private void fillIn(double x, double y) {
+        int xT = getNearest(x);
+        int yT = getNearest(y);
+        fillIn0(xT, yT, fineSearchMaxDimension);
+    }
+
+    // what the heck, recursion?
+    private void fillIn0(int xT, int yT, int maxDim) {
+        assert xT >= 0 && xT < cX : "out of bound tile x";
+        assert yT >= 0 && yT < cY : "out of bound tile y";
+        Tile t = tiles[xT][yT];
+        if (t.hasFine) return;
+        assert t.fine.length == FINE_STEP_SUBDIVISIONS : "mis-sized fine array";
+        assert t.fine[0].length == FINE_STEP_SUBDIVISIONS : "mis-sized fine array";
+        double max = 0;
+        for (int x = -FINE_STEPS_IN_EACH_DIRECTION; x <= FINE_STEPS_IN_EACH_DIRECTION; x++) {
+            for (int y = -FINE_STEPS_IN_EACH_DIRECTION; y <= FINE_STEPS_IN_EACH_DIRECTION; y++) {
+                double val = calculateWeighted(getFineDimension(xT, x), getFineDimension(yT, y));
+                max = Math.max(val, max);
+            }
+        }
+        if (max > islandRemainStrength && maxDim > 0) {
+
+            // most of these return quickly. Optimize if needed.
+            fillIn0(xT + 1, yT, maxDim - 1);
+            fillIn0(xT + 1, yT + 1, maxDim - 1);
+            fillIn0(xT, yT + 1, maxDim - 1);
+            fillIn0(xT - 1, yT + 1, maxDim - 1);
+            fillIn0(xT - 1, yT, maxDim - 1);
+            fillIn0(xT - 1, yT - 1, maxDim - 1);
+            fillIn0(xT, yT - 1, maxDim - 1);
+            fillIn0(xT + 1, yT - 1, maxDim - 1);
+        }
+
+    }
+
+    private double calculateWeighted(double x, double y) {
+        assert x < fieldX && x > 0 : "fieldX out of bounds";
+        assert y < fieldY && y > 0 : "fieldY out of bounds";
+        double sum = 0;
+        double weights = 0;
+        for (Sensor s : sensors) {
+            double weight = s.getWeight(x, y);
+            sum += (s.getLikelihood(x, y) * weight);
+            weights += weight;
+        }
+        return sum / weights;
+    }
+
+    // instances of this class are re-used often, for performance reasons.
+    private class Tile {
+        double coarse;
+        double[][] fine;
+        boolean hasFine = false;
+
+        Tile(int fineSubdivs) {
+            fine = new double[fineSubdivs][fineSubdivs];
+        }
     }
 
 }

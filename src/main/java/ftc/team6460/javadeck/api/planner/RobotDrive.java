@@ -32,24 +32,35 @@ import java.util.Iterator;
  */
 public abstract class RobotDrive implements Sensor {
     @Override
-    public double getLikelihood(double x, double y, double theta) {
-        return calculateGaussian(x - currentPosition.getX(),
-                y - currentPosition.getY(),
-                Math.IEEEremainder((theta - currentPosition.getTheta()), 2 * Math.PI));
-    }
-
-    // calculates a gaussian in 3d around the center
-    private double calculateGaussian(double deltaX, double deltaY, double theta) {
-        double twoSigmaSquared = (2 * Math.pow(collectedDrift, 2));
-        double xExpComponent = Math.pow(deltaX, 2) / twoSigmaSquared;
-        double yExpComponent = Math.pow(deltaY, 2) / twoSigmaSquared;
-        double thetaExpComponent = Math.pow(theta, 2) / (2 * Math.pow(collectedAngularDrift, 2));
-        // blech
-        return Math.exp(-1 * (xExpComponent + yExpComponent + thetaExpComponent));
+    public double getLikelihood(double x, double y) {
+        return calculate2DGaussian(x - currentPosition.getX(),
+                y - currentPosition.getY());
     }
 
     @Override
-    public double getWeight(double x, double y, double theta) {
+    public double getOrientationLikelihood(double x, double y, double theta) {
+        return calculate1DGaussian(Math.IEEEremainder((theta - currentPosition.getTheta()), 2 * Math.PI));
+    }
+
+    // calculates a gaussian in 3d around the center
+    private double calculate2DGaussian(double deltaX, double deltaY) {
+        double twoSigmaSquared = (2 * Math.pow(collectedDrift, 2));
+        double xExpComponent = Math.pow(deltaX, 2) / twoSigmaSquared;
+        double yExpComponent = Math.pow(deltaY, 2) / twoSigmaSquared;
+        // blech
+        return Math.exp(-1 * (xExpComponent + yExpComponent));
+    }
+
+    // calculates a gaussian in 3d around the center
+    private double calculate1DGaussian(double theta) {
+        double twoSigmaSquared = (2 * Math.pow(collectedDrift, 2));
+        double thetaExpComponent = Math.pow(theta, 2) / (2 * Math.pow(collectedAngularDrift, 2));
+        // blech
+        return Math.exp(-1 * (thetaExpComponent));
+    }
+
+    @Override
+    public double getWeight(double x, double y) {
         return this.weight;
     }
 
@@ -66,7 +77,7 @@ public abstract class RobotDrive implements Sensor {
             double newY = (y * agreedWeight + currentPosition.getY() * this.weight) / (this.weight + agreedWeight);
             double newTheta = (theta * agreedWeight + currentPosition.getTheta() * this.weight) / (this.weight + agreedWeight);
             // what the heck?
-            this.weight = (this.weight + calculateGaussian(x - currentPosition.getX(), y - currentPosition.getY(), theta - currentPosition.getTheta())) / 2;
+            this.weight = (this.weight + calculate2DGaussian(x - currentPosition.getX(), y - currentPosition.getY())) / 2;
             this.currentPosition = new ImmutableRobotPosition(newX, newY, newTheta);
         } catch (ArithmeticException e) {
             this.weight = 1;
