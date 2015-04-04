@@ -64,6 +64,15 @@ public class ImmutableRobotPosition implements RobotPosition {
         return this;
     }
 
+    @Override
+    public String toString() {
+        return "ImmutableRobotPosition{" +
+                "xPosition=" + xPosition +
+                ", yPosition=" + yPosition +
+                ", theta=" + theta +
+                '}';
+    }
+
     /**
      * Constructs a new robot position container.
      *

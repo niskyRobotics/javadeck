@@ -29,25 +29,27 @@ package ftc.team6460.javadeck.api.planner;
  */
 public class LocationCandidate {
     private final ImmutableRobotPosition position;
-    private final double islandSize;
     private final double correlationStrength;
 
     public ImmutableRobotPosition getPosition() {
         return position;
     }
 
-    public double getIslandSize() {
-        return islandSize;
-    }
-
     public double getCorrelationStrength() {
         return correlationStrength;
     }
 
-    public LocationCandidate(ImmutableRobotPosition position, double islandSize, double correlationStrength) {
+    @Override
+    public String toString() {
+        return "LocationCandidate{" +
+                "position=" + position +
+                ", correlationStrength=" + correlationStrength +
+                '}';
+    }
+
+    public LocationCandidate(ImmutableRobotPosition position, double correlationStrength) {
 
         this.position = position;
-        this.islandSize = islandSize;
         this.correlationStrength = correlationStrength;
     }
 }
