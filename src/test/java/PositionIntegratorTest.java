@@ -32,6 +32,11 @@ import java.util.*;
  * Created by hexafraction on 3/31/15.
  */
 public class PositionIntegratorTest {
+
+    public static void main(String[] args) throws Exception {
+        new PositionIntegratorTest().testTry1();
+    }
+
     @Test
     public void testTry1() throws Exception {
         List<Sensor> sens = new ArrayList<>();
@@ -51,14 +56,14 @@ public class PositionIntegratorTest {
         long t = System.currentTimeMillis();
         int iters = 0;
         Random r = new Random();
-        for(int i = 0; i < 1000; i++){
+        for(int i = 0; i < 10000; i++){
             iters++;
             double x = r.nextDouble()*8 + 1;
             double y = r.nextDouble()*8 +1;
             xH.setPos(x);
             yH.setPos(y);
             Assert.assertEquals(1, xH.getLikelihood(x, 5), 0.1);
-            List<LocationCandidate> res = integ.getCandidates(0.98);
+            List<LocationCandidate> res = integ.getCandidates(0.99);
             Collections.sort(res, new Comparator<LocationCandidate>() {
                 @Override
                 public int compare(LocationCandidate o1, LocationCandidate o2) {
@@ -108,11 +113,14 @@ public class PositionIntegratorTest {
 
         @Override
         public Iterable<RobotPosition> getPossibleHotspots() {
+            return Collections.emptyList();
+            /*
+
             ArrayList<RobotPosition> l = new ArrayList<>();
-            for(int i = 0; i <= 10; i++){
-                l.add(new ImmutableRobotPosition(pos,i, 0));
+            for(int i = 0; i <= 5; i++){
+                l.add(new ImmutableRobotPosition(pos,i*2, 0));
             }
-            return l;
+            return l;*/
         }
 
         @Override
@@ -149,9 +157,11 @@ public class PositionIntegratorTest {
 
         @Override
         public Iterable<RobotPosition> getPossibleHotspots() {
+            //return Collections.emptyList();
+
             ArrayList<RobotPosition> l = new ArrayList<>();
-            for (int i = 0; i <= 10; i++) {
-                l.add(new ImmutableRobotPosition(i, pos, 0));
+            for (int i = 0; i <= 5; i++) {
+                l.add(new ImmutableRobotPosition(i*2, pos, 0));
             }
             return l;
         }

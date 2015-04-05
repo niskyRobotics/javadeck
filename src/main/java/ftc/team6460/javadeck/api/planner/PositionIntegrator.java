@@ -55,7 +55,7 @@ public class PositionIntegrator {
 
     private final double cX, cY;
 
-    private static final double COARSE_SEARCH_STEP = 0.10;
+    private static final double COARSE_SEARCH_STEP = 0.2;
 
     //value should be odd.
     // F F F F F
@@ -63,7 +63,7 @@ public class PositionIntegrator {
     // F F C F F
     // F F F F F
     // F F F F F
-    private static final int FINE_STEP_SUBDIVISIONS = 5;
+    private static final int FINE_STEP_SUBDIVISIONS = 9;
     private static final int FINE_STEPS_IN_EACH_DIRECTION = (int) (FINE_STEP_SUBDIVISIONS / 2);
 
 
@@ -114,35 +114,16 @@ public class PositionIntegrator {
      * Returns a list of positions, in no particular order, that describes likely robot positions.
      */
     public List<LocationCandidate> getCandidates(double minCorr) {
-        double total = 0;
-        for (int x = 0; x < cX; x++) {
-            for (int y = 0; y < cY; y++) {
-                // reference!
-                Tile t = tiles[x][y];
-                t.hasFine = false;
-                t.zero();
-                t.coarse = calculateWeighted(getDimension(x), getDimension(y));
-                total += t.coarse;
-            }
-        }
-        double avg = total / (cX * cY);
+        double avg = fillCoarse0();
 
-        for (Sensor s : sensors) {
-            for (RobotPosition lc : s.getPossibleHotspots()) {
-                //System.out.println("lc = " + lc);
-                fillIn(lc.getX(), lc.getY());
-            }
-        }
+        fillSensorSuggestions0();
 
-        for (int x = 0; x < cX; x++) {
-            for (int y = 0; y < cY; y++) {
-                if (tiles[x][y].coarse > islandMinAbsolute || tiles[x][y].coarse > (avg * correlatorMinSNR)) {
-                    //System.out.println("x = " + x + ", y = " + y);
-                    fillInPos(x, y);
-                }
-            }
-        }
+        fillDetectedIslands0(avg);
 
+        return findCandidates0(minCorr);
+    }
+
+    private List<LocationCandidate> findCandidates0(double minCorr) {
         List<LocationCandidate> candidates = new ArrayList<>();
 
         for (int x = 0; x < cX; x++) {
@@ -157,6 +138,41 @@ public class PositionIntegrator {
         }
 
         return candidates;
+    }
+
+    private void fillDetectedIslands0(double avg) {
+        for (int x = 0; x < cX; x++) {
+            for (int y = 0; y < cY; y++) {
+                if (tiles[x][y].coarse > islandMinAbsolute || tiles[x][y].coarse > (avg * correlatorMinSNR)) {
+                    //System.out.println("x = " + x + ", y = " + y);
+                    fillInPos(x, y);
+                }
+            }
+        }
+    }
+
+    private void fillSensorSuggestions0() {
+        for (Sensor s : sensors) {
+            for (RobotPosition lc : s.getPossibleHotspots()) {
+                //System.out.println("lc = " + lc);
+                fillIn(lc.getX(), lc.getY());
+            }
+        }
+    }
+
+    private double fillCoarse0() {
+        double total = 0;
+        for (int x = 0; x < cX; x++) {
+            for (int y = 0; y < cY; y++) {
+                // reference!
+                Tile t = tiles[x][y];
+                t.hasFine = false;
+                t.zero();
+                t.coarse = calculateWeighted(getDimension(x), getDimension(y));
+                total += t.coarse;
+            }
+        }
+        return total / (cX * cY);
     }
 
     // actually checks if this max is at least correlatorMinSNR the surrounding average
@@ -219,8 +235,8 @@ public class PositionIntegrator {
         Tile t = tiles[xT][yT];
         if (t.hasFine) return;
         t.hasFine = true;
-        assert t.fine.length == FINE_STEP_SUBDIVISIONS : "mis-sized fine array";
-        assert t.fine[0].length == FINE_STEP_SUBDIVISIONS : "mis-sized fine array";
+        //assert t.fine.length == FINE_STEP_SUBDIVISIONS : "mis-sized fine array";
+        //assert t.fine[0].length == FINE_STEP_SUBDIVISIONS : "mis-sized fine array";
         double max = 0;
         for (int x = -FINE_STEPS_IN_EACH_DIRECTION; x <= FINE_STEPS_IN_EACH_DIRECTION; x++) {
             for (int y = -FINE_STEPS_IN_EACH_DIRECTION; y <= FINE_STEPS_IN_EACH_DIRECTION; y++) {
