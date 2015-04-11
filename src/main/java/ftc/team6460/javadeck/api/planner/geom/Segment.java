@@ -22,24 +22,38 @@
  * THE SOFTWARE.
  */
 
-package ftc.team6460.javadeck.api.planner;
+package ftc.team6460.javadeck.api.planner.geom;
 
 /**
- * Describes the current state of a robot. This class is thread-safe, and may be extended.
- * @param <T> A custom class to store and pass around with this object.
+ * Created by hexafraction on 4/11/15.
  */
-public abstract class RobotState<T> {
-    // TODO something here.
+public class Segment {
+    Point2D p0;
+    Point2D p1;
 
-    private T substate;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Segment)) return false;
 
-    public T getSubstate() {
-        return substate;
+        Segment segment = (Segment) o;
+
+        if (p0.equals(segment.p0) && p1.equals(segment.p1)) return true;
+        // unordered, either order OK
+        if (p0.equals(segment.p1) && p1.equals(segment.p0)) return true;
+
+        return false;
     }
 
-    public void setSubstate(T substate) {
-        this.substate = substate;
+    @Override
+    public int hashCode() {
+        //symmetric
+        return p0.hashCode() ^ p1.hashCode();
     }
 
-    public abstract RobotPosition getCurrentPosition();
+    public Segment(Point2D p0, Point2D p1) {
+
+        this.p0 = p0;
+        this.p1 = p1;
+    }
 }

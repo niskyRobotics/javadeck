@@ -53,7 +53,7 @@ public abstract class RobotDrive implements Sensor {
 
     // calculates a gaussian in 3d around the center
     private double calculate1DGaussian(double theta) {
-        double twoSigmaSquared = (2 * Math.pow(collectedDrift, 2));
+        //double twoSigmaSquared = (2 * Math.pow(collectedDrift, 2));
         double thetaExpComponent = Math.pow(theta, 2) / (2 * Math.pow(collectedAngularDrift, 2));
         // blech
         return Math.exp(-1 * (thetaExpComponent));

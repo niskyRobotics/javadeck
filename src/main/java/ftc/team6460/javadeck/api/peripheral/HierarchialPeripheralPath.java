@@ -34,8 +34,8 @@ public abstract class HierarchialPeripheralPath<T extends RobotPeripheral> {
 
     public abstract List<PathElement<?>> getElements();
 
-    public class PathElement<T> {
-        T identifier;
+    public class PathElement<ET> {
+        ET identifier;
 
     }
 }

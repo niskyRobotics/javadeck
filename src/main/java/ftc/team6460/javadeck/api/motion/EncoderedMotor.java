@@ -34,7 +34,7 @@ import ftc.team6460.javadeck.api.safety.SafetyPeripheral;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * Represents a motor with an encoder. The encoder is currently assumed to be relative and resettable. If it is not, the implementor must implement appropriate logic.
+ * Represents a motor with an encoder. The encoder is currently assumed to be relative and resettable. If it is not, the implementer must implement appropriate logic.
  * Subclasses must be thread-safe.
  */
 public abstract class EncoderedMotor implements EffectorPeripheral<Double>, SensorPeripheral<Double, Void>, SafetyPeripheral {

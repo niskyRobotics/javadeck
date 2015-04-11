@@ -25,7 +25,7 @@
 package ftc.team6460.javadeck.api.planner;
 
 /**
- * Thrown if the robot collides with an obstacle during a move0.
+ * Thrown if the robot collides with an obstacle during a move, or if any planner operations are illegal due to obstacles.
  */
 public class ObstacleException extends Exception {
     public ObstacleException() {

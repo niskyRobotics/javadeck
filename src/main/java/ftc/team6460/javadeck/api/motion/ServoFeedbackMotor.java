@@ -87,6 +87,7 @@ public abstract class ServoFeedbackMotor implements EffectorPeripheral<Double>, 
                     }
                 }
                 power = Math.signum(power) * Math.max(Math.abs(maxPower), Math.abs(power));
+                currentDirectionSignum = (int)Math.signum(power);
                 inner.writeFast(power);
 
             } catch (Exception e) {

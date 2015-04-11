@@ -34,11 +34,11 @@ import java.util.*;
 public class PositionIntegratorTest {
 
     public static void main(String[] args) throws Exception {
-        new PositionIntegratorTest().testTry1();
+        new PositionIntegratorTest().interactiveTest();
     }
 
-    @Test
-    public void testTry1() throws Exception {
+    @Test(timeout = 500)
+    public void testPositionalError() throws Exception {
         List<Sensor> sens = new ArrayList<>();
         FakeXHill xH = new FakeXHill(Math.PI);
         FakeYHill yH = new FakeYHill(Math.E);
@@ -52,14 +52,58 @@ public class PositionIntegratorTest {
                 return -Double.compare(o1.getCorrelationStrength(), o2.getCorrelationStrength());
             }
         });
-        System.out.println(cands.get(0));
+        Assert.assertEquals(cands.get(0).getPosition().getX(), Math.PI, 0.02);
+        Assert.assertEquals(cands.get(0).getPosition().getY(), Math.E, 0.02);
+       // System.out.println(cands.get(0));
         long t = System.currentTimeMillis();
         int iters = 0;
         Random r = new Random();
-        for(int i = 0; i < 10000; i++){
+        for (int i = 0; i < 10; i++) {
             iters++;
-            double x = r.nextDouble()*8 + 1;
-            double y = r.nextDouble()*8 +1;
+            double x = r.nextDouble() * 8 + 1;
+            double y = r.nextDouble() * 8 + 1;
+            xH.setPos(x);
+            yH.setPos(y);
+            Assert.assertEquals(1, xH.getLikelihood(x, 5), 0.1);
+            List<LocationCandidate> res = integ.getCandidates(0.99);
+            Collections.sort(res, new Comparator<LocationCandidate>() {
+                @Override
+                public int compare(LocationCandidate o1, LocationCandidate o2) {
+                    return -Double.compare(o1.getCorrelationStrength(), o2.getCorrelationStrength());
+                }
+            });
+
+            ImmutableRobotPosition p = res.get(0).getPosition();
+            Assert.assertEquals(p.getX(), x, 0.02);
+            Assert.assertEquals(p.getY(), y, 0.02);
+            // System.out.println(res.get(0));
+            // System.out.println("ERR: " + Math.hypot(p.getX() - x, p.getY() - y) + "; MILLIS/ITER = " + (System.currentTimeMillis() - t) / iters);
+
+        }
+    }
+
+    public void interactiveTest() throws Exception {
+        List<Sensor> sens = new ArrayList<>();
+        FakeXHill xH = new FakeXHill(Math.PI);
+        FakeYHill yH = new FakeYHill(Math.E);
+        sens.add(xH);
+        sens.add(yH);
+        PositionIntegrator integ = new PositionIntegrator(sens, 10, 10);
+        List<LocationCandidate> cands = integ.getCandidates(0.95);
+        Collections.sort(cands, new Comparator<LocationCandidate>() {
+            @Override
+            public int compare(LocationCandidate o1, LocationCandidate o2) {
+                return -Double.compare(o1.getCorrelationStrength(), o2.getCorrelationStrength());
+            }
+        });
+        System.out.println(cands);
+        long t = System.currentTimeMillis();
+        int iters = 0;
+        Random r = new Random();
+        for (int i = 0; i < 0; i++) {
+            iters++;
+            double x = r.nextDouble() * 8 + 1;
+            double y = r.nextDouble() * 8 + 1;
             xH.setPos(x);
             yH.setPos(y);
             Assert.assertEquals(1, xH.getLikelihood(x, 5), 0.1);
@@ -74,7 +118,7 @@ public class PositionIntegratorTest {
                 ImmutableRobotPosition p = res.get(0).getPosition();
                 System.out.println(res.get(0));
                 System.out.println("ERR: " + Math.hypot(p.getX() - x, p.getY() - y) + "; MILLIS/ITER = " + (System.currentTimeMillis() - t) / iters);
-            } catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
                 System.out.println("x = " + x);
                 System.out.println("y = " + y);
@@ -161,7 +205,7 @@ public class PositionIntegratorTest {
 
             ArrayList<RobotPosition> l = new ArrayList<>();
             for (int i = 0; i <= 5; i++) {
-                l.add(new ImmutableRobotPosition(i*2, pos, 0));
+                l.add(new ImmutableRobotPosition(i * 2, pos, 0));
             }
             return l;
         }

@@ -22,24 +22,28 @@
  * THE SOFTWARE.
  */
 
-package ftc.team6460.javadeck.api.planner;
+package ftc.team6460.javadeck.api.planner.geom;
 
 /**
- * Describes the current state of a robot. This class is thread-safe, and may be extended.
- * @param <T> A custom class to store and pass around with this object.
+ * Created by hexafraction on 4/11/15.
  */
-public abstract class RobotState<T> {
-    // TODO something here.
-
-    private T substate;
-
-    public T getSubstate() {
-        return substate;
+public class DuplicateWaypointException extends Throwable {
+    public DuplicateWaypointException() {
     }
 
-    public void setSubstate(T substate) {
-        this.substate = substate;
+    public DuplicateWaypointException(String message) {
+        super(message);
     }
 
-    public abstract RobotPosition getCurrentPosition();
+    public DuplicateWaypointException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public DuplicateWaypointException(Throwable cause) {
+        super(cause);
+    }
+
+    public DuplicateWaypointException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
+    }
 }
