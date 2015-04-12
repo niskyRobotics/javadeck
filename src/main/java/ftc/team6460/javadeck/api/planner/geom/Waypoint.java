@@ -37,7 +37,7 @@ public class Waypoint {
     }
 
     private static final HashMap<Point2D, Waypoint> cache = new HashMap<>();
-    public Waypoint fromPos(Point2D pos){
+    public static Waypoint fromPos(Point2D pos){
         if(cache.containsKey(pos)) return cache.get(pos);
         else {
             Waypoint wp = new Waypoint(pos);
@@ -46,8 +46,23 @@ public class Waypoint {
         }
     }
 
-    public Set<WaypointConnection> getConnections() {
-        return Collections.unmodifiableSet(connections);
+    public Tag tag;
+
+    public class Tag{
+        double dist = Double.POSITIVE_INFINITY; Waypoint prev; boolean inQueue = false;
+
+        @Override
+        public String toString() {
+            return "Tag{" +
+                    "dist=" + dist +
+                    ", prev=" + prev +
+                    ", inQueue=" + inQueue +
+                    '}';
+        }
+    }
+
+    public Set<Waypoint> getNeighbors() {
+        return Collections.unmodifiableSet(neighbors);
     }
 
     public Set<Field.Zone> getZones() {
@@ -61,36 +76,28 @@ public class Waypoint {
 
 
     private final Point2D pos;
-    private final Set<WaypointConnection> connections = new HashSet<>();
+    private final Set<Waypoint> neighbors = new HashSet<>();
+
+    public double distanceTo(Waypoint w){
+        return GeometryUtils.euclideanDistance(w.pos, this.pos);
+    }
+
+    @Override
+    public String toString() {
+        return "Waypoint{" +
+                "zones=" + zones +
+                ", tag=" + tag +
+                ", pos=" + pos +
+                '}';
+    }
+
+    void addNeighbor(Waypoint w){
+        this.neighbors.add(w);
+    }
 
     public Point2D getPos() {
         return pos;
     }
 
-    public static class WaypointConnection {
 
-        private final Waypoint w1, w2;
-        private final double cost;
-
-        public Waypoint getW1() {
-            return w1;
-        }
-
-        public Waypoint getW2() {
-            return w2;
-        }
-
-        public WaypointConnection(Waypoint w1, Waypoint w2, double cost) {
-
-            this.w1 = w1;
-            this.w2 = w2;
-            this.cost = cost;
-        }
-
-        public double getCost() {
-            return cost;
-        }
-
-
-    }
 }

@@ -83,16 +83,66 @@ public class Field {
         return best;
     }
 
+    // Dijkstra's algorithm
+    public List<Waypoint> findPath(Waypoint start, Waypoint end) {
+        // tradeoff: decrease priority is not well implemented in the Java API, so we'll just do it in O(V) instead, manually.
+        // This should only happen rarely.
+        for (Waypoint w : waypoints) {
+            w.tag = w.new Tag();
+        }
+        PriorityQueue<Waypoint> queue = new PriorityQueue<Waypoint>(10, new Comparator<Waypoint>() {
+            @Override
+            public int compare(Waypoint w1, Waypoint w2) {
+                return Double.compare(w1.tag.dist, w2.tag.dist);
+            }
+        });
+        // we'll do a backwards search so we can extract the path in forward order relative to parameters start and end.
+        Waypoint src = end;
+        src.tag.dist = 0;
+        src.tag.inQueue = true;
+        queue.add(src);
+
+        while (!queue.isEmpty()) {
+            Waypoint u = queue.poll();
+            //System.out.println("u = " + u);
+            if (u == start) break;
+            for (Waypoint v : u.getNeighbors()) {
+                double alt = u.tag.dist + u.distanceTo(v);
+                if (alt < v.tag.dist) {
+                    if (v.tag.inQueue) {
+                        queue.remove(v);
+                    }
+                    v.tag.dist = alt;
+                    v.tag.prev = u;
+                    queue.add(v);
+                    v.tag.inQueue = true;
+                }
+
+            }
+        }
+
+        ArrayList<Waypoint> path = new ArrayList<>();
+        Waypoint t = start;
+        //System.out.println("t = " + t);
+        do {
+            path.add(t);
+            t = t.tag.prev;
+        } while (t != end
+                && t != null);
+        return path;
+    }
 
 
     public void addConnection(Waypoint w1, Waypoint w2) throws ObstacleException {
+        if (w1.equals(w2)) throw new IllegalArgumentException("connection to self");
         Segment s = new Segment(w1.getPos(), w2.getPos());
         for (Zone z : zones) {
             if (z.mode == ZoneMode.ZONE_OBSTACLE || z.mode == ZoneMode.ZONE_ILLEGAL) {
                 if (z.intersects(s)) throw new ObstacleException("Connection crosses an obstacle or illegal zone");
             }
         }
-        Waypoint.WaypointConnection conn = new Waypoint.WaypointConnection(w1, w2, GeometryUtils.euclideanDistance(w1.getPos(), w2.getPos()));
+        w1.addNeighbor(w2);
+        w2.addNeighbor(w1);
     }
 
     enum ZoneMode {
