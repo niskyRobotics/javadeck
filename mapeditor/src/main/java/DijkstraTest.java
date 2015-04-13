@@ -79,6 +79,13 @@ public class DijkstraTest extends BasicGame {
             if (c == 'f') {
                 foundPath = f.findPath(h1, h2);
             }
+            if (c == 'd') {
+                h1.disconnect(h2);
+                h2.disconnect(h1);
+            }
+            if(c=='r') {
+                f.removeWaypoint(h1);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -98,7 +105,7 @@ public class DijkstraTest extends BasicGame {
 
     @Override
     public void render(GameContainer gc, Graphics g) throws SlickException {
-
+        g.clear();
         for (Waypoint w : f.getWaypoints()) {
             g.setColor(Color.darkGray);
             for (Waypoint n : w.getNeighbors()) {
@@ -108,7 +115,7 @@ public class DijkstraTest extends BasicGame {
                 g.setColor(Color.yellow);
             else if (w == h2)
                 g.setColor(Color.red);
-             else g.setColor(Color.lightGray);
+            else g.setColor(Color.lightGray);
             int x = (int) w.getPos().getX();
             int y = (int) w.getPos().getY();
 
@@ -123,14 +130,14 @@ public class DijkstraTest extends BasicGame {
         if (foundPath != null) {
             for (int i = 0; i < foundPath.size() - 1; i++) {
                 g.drawLine(foundPath.get(i).getPos().getX(), foundPath.get(i).getPos().getY(), foundPath.get(i + 1).getPos().getX(), foundPath.get(i + 1).getPos().getY());
-                g.drawLine(foundPath.get(i).getPos().getX()+1, foundPath.get(i).getPos().getY(), foundPath.get(i + 1).getPos().getX()+1, foundPath.get(i + 1).getPos().getY());
-                g.drawLine(foundPath.get(i).getPos().getX()-1, foundPath.get(i).getPos().getY(), foundPath.get(i + 1).getPos().getX()-1, foundPath.get(i + 1).getPos().getY());
-                g.drawLine(foundPath.get(i).getPos().getX(), foundPath.get(i).getPos().getY()+1, foundPath.get(i + 1).getPos().getX(), foundPath.get(i + 1).getPos().getY()+1);
-                g.drawLine(foundPath.get(i).getPos().getX()+1, foundPath.get(i).getPos().getY()+1, foundPath.get(i + 1).getPos().getX()+1, foundPath.get(i + 1).getPos().getY()+1);
-                g.drawLine(foundPath.get(i).getPos().getX()-1, foundPath.get(i).getPos().getY()+1, foundPath.get(i + 1).getPos().getX()-1, foundPath.get(i + 1).getPos().getY()+1);
-                g.drawLine(foundPath.get(i).getPos().getX(), foundPath.get(i).getPos().getY()-1, foundPath.get(i + 1).getPos().getX(), foundPath.get(i + 1).getPos().getY()-1);
-                g.drawLine(foundPath.get(i).getPos().getX()+1, foundPath.get(i).getPos().getY()-1, foundPath.get(i + 1).getPos().getX()+1, foundPath.get(i + 1).getPos().getY()-1);
-                g.drawLine(foundPath.get(i).getPos().getX()-1, foundPath.get(i).getPos().getY()-1, foundPath.get(i + 1).getPos().getX()-1, foundPath.get(i + 1).getPos().getY()-1);
+                g.drawLine(foundPath.get(i).getPos().getX() + 1, foundPath.get(i).getPos().getY(), foundPath.get(i + 1).getPos().getX() + 1, foundPath.get(i + 1).getPos().getY());
+                g.drawLine(foundPath.get(i).getPos().getX() - 1, foundPath.get(i).getPos().getY(), foundPath.get(i + 1).getPos().getX() - 1, foundPath.get(i + 1).getPos().getY());
+                g.drawLine(foundPath.get(i).getPos().getX(), foundPath.get(i).getPos().getY() + 1, foundPath.get(i + 1).getPos().getX(), foundPath.get(i + 1).getPos().getY() + 1);
+                g.drawLine(foundPath.get(i).getPos().getX() + 1, foundPath.get(i).getPos().getY() + 1, foundPath.get(i + 1).getPos().getX() + 1, foundPath.get(i + 1).getPos().getY() + 1);
+                g.drawLine(foundPath.get(i).getPos().getX() - 1, foundPath.get(i).getPos().getY() + 1, foundPath.get(i + 1).getPos().getX() - 1, foundPath.get(i + 1).getPos().getY() + 1);
+                g.drawLine(foundPath.get(i).getPos().getX(), foundPath.get(i).getPos().getY() - 1, foundPath.get(i + 1).getPos().getX(), foundPath.get(i + 1).getPos().getY() - 1);
+                g.drawLine(foundPath.get(i).getPos().getX() + 1, foundPath.get(i).getPos().getY() - 1, foundPath.get(i + 1).getPos().getX() + 1, foundPath.get(i + 1).getPos().getY() - 1);
+                g.drawLine(foundPath.get(i).getPos().getX() - 1, foundPath.get(i).getPos().getY() - 1, foundPath.get(i + 1).getPos().getX() - 1, foundPath.get(i + 1).getPos().getY() - 1);
             }
         }
     }
@@ -144,8 +151,8 @@ public class DijkstraTest extends BasicGame {
 
         for (int x = 0; x < 20; x++) {
             for (int y = 0; y < 20; y++) {
-                test[x][y] = Waypoint.fromPos(new Point2D(x*40 + 80, y*40+80));
-                if ((x > 3 && x < 18 && (y == 6 || y==13)) || (y < 18 && x == 8)) {
+                test[x][y] = Waypoint.fromPos(new Point2D(x * 40 + 80, y * 40 + 80));
+                if ((x > 3 && x < 18 && (y == 6 || y == 13)) || (y < 18 && x == 8)) {
                     test[x][y] = null;
                 }
                 if (test[x][y] != null)

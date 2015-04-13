@@ -46,7 +46,28 @@ public class Waypoint {
         }
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Waypoint)) return false;
+
+        Waypoint waypoint = (Waypoint) o;
+
+        if (!pos.equals(waypoint.pos)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return pos.hashCode();
+    }
+
     public Tag tag;
+
+    public void disconnect(Waypoint w) {
+        this.neighbors.remove(w);
+    }
 
     public class Tag{
         double dist = Double.POSITIVE_INFINITY; Waypoint prev; boolean inQueue = false;

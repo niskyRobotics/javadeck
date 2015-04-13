@@ -135,6 +135,15 @@ public class Field {
         return path;
     }
 
+    public void removeWaypoint(Waypoint w){
+        waypoints.remove(w);
+        Set<Waypoint> neighbors = new HashSet<>();
+        neighbors.addAll(w.getNeighbors());
+        for(Waypoint n : neighbors){
+            n.disconnect(w);
+            w.disconnect(n);
+        }
+    }
 
     public void addConnection(Waypoint w1, Waypoint w2) throws ObstacleException {
         if (w1.equals(w2)) throw new IllegalArgumentException("connection to self");
