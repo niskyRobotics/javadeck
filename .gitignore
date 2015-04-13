@@ -1,6 +1,13 @@
 .gradle
 build/
 out/
-
+mapeditor/target/
+target/
 # Ignore Gradle GUI config
 gradle-app.setting
+*.dll
+*.so
+*.jar
+*.class
+*.dylib
+*.jnilib

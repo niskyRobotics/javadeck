@@ -84,7 +84,7 @@ public class Field {
     }
 
     // Dijkstra's algorithm
-    public List<Waypoint> findPath(Waypoint start, Waypoint end) {
+    public List<Waypoint> findPath(Waypoint start, Waypoint end) throws ObstacleException {
         // tradeoff: decrease priority is not well implemented in the Java API, so we'll just do it in O(V) instead, manually.
         // This should only happen rarely.
         for (Waypoint w : waypoints) {
@@ -105,12 +105,13 @@ public class Field {
         while (!queue.isEmpty()) {
             Waypoint u = queue.poll();
             //System.out.println("u = " + u);
-            if (u == start) break;
+
             for (Waypoint v : u.getNeighbors()) {
                 double alt = u.tag.dist + u.distanceTo(v);
                 if (alt < v.tag.dist) {
                     if (v.tag.inQueue) {
                         queue.remove(v);
+                        //System.out.println("boo");
                     }
                     v.tag.dist = alt;
                     v.tag.prev = u;
@@ -119,6 +120,7 @@ public class Field {
                 }
 
             }
+            if (u == start) break;
         }
 
         ArrayList<Waypoint> path = new ArrayList<>();
@@ -127,8 +129,9 @@ public class Field {
         do {
             path.add(t);
             t = t.tag.prev;
-        } while (t != end
-                && t != null);
+            if(t==null) throw new ObstacleException("No path found.");
+        } while (t != end);
+        path.add(end);
         return path;
     }
 
@@ -143,6 +146,10 @@ public class Field {
         }
         w1.addNeighbor(w2);
         w2.addNeighbor(w1);
+    }
+
+    public Iterable<Waypoint> getWaypoints() {
+        return Collections.unmodifiableSet(waypoints);
     }
 
     enum ZoneMode {

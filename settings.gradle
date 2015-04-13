@@ -1,2 +1,4 @@
 rootProject.name = 'javadeck'
 
+include 'mapeditor'
+

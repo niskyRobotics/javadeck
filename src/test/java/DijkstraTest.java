@@ -44,7 +44,7 @@ public class DijkstraTest {
         for (int x = 0; x < 20; x++) {
             for (int y = 0; y < 20; y++) {
                 test[x][y] = Waypoint.fromPos(new Point2D(x, y));
-                if ((x > 3 && x < 15 && y == 6) || (y < 18 && x == 8)) {
+                if ((x > 3 && x < 18 && (y == 6 || y==13)) || (y < 18 && x == 8)) {
                     test[x][y] = null;
                 }
                 if (test[x][y] != null)

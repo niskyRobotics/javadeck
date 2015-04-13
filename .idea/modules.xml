@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/javadeck.iml" filepath="$PROJECT_DIR$/javadeck.iml" />
+      <module fileurl="file://$PROJECT_DIR$/mapeditor/mapeditor.iml" filepath="$PROJECT_DIR$/mapeditor/mapeditor.iml" />
     </modules>
   </component>
 </project>
