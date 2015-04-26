@@ -5,7 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="49630bc0-623b-4123-bb0e-202ba76dd335" name="Default" comment="Create a drivetrain, obstable sensor, relative position, helper exceptions">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/ftc/team6460/javadeck/api/motion/ParallelDrive.java" afterPath="" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/ftc/team6460/javadeck/api/motion/impl/HolonomicDrivetrain.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/ftc/team6460/javadeck/api/motion/impl/ParallelDrivetrain.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/main/java/ftc/team6460/javadeck/api/motion/VelocityDrivetrain.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/main/java/ftc/team6460/javadeck/api/motion/MotionDrivetrain.java" afterPath="$PROJECT_DIR$/src/main/java/ftc/team6460/javadeck/api/motion/PositionBasedDrivetrain.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="javadeck.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -41,7 +45,18 @@
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0" vertical-offset="1695" max-vertical-offset="2985">
               <caret line="141" column="36" selection-start-line="141" selection-start-column="36" selection-end-line="141" selection-end-column="36" />
-              <folding />
+              <folding>
+                <element signature="e#0#8290#0" expanded="false" />
+                <element signature="imports" expanded="false" />
+                <element signature="e#1542#1543#0" expanded="false" />
+                <element signature="e#1580#1581#0" expanded="false" />
+                <element signature="e#3420#3421#0" expanded="false" />
+                <element signature="e#3499#3500#0" expanded="false" />
+                <element signature="e#5614#5615#0" expanded="false" />
+                <element signature="e#5675#5676#0" expanded="false" />
+                <element signature="e#7847#7848#0" expanded="false" />
+                <element signature="e#7932#7933#0" expanded="false" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -59,7 +74,7 @@
       <file leaf-file-name="RelativePosition.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/ftc/team6460/javadeck/api/planner/RelativePosition.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1035">
+            <state vertical-scroll-proportion="0.0" vertical-offset="210" max-vertical-offset="1035">
               <caret line="36" column="18" selection-start-line="36" selection-start-column="18" selection-end-line="36" selection-end-column="18" />
               <folding>
                 <element signature="e#1476#1477#0" expanded="true" />
@@ -69,32 +84,67 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="MotionDrivetrain.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/ftc/team6460/javadeck/api/motion/MotionDrivetrain.java">
+      <file leaf-file-name="PositionBasedDrivetrain.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/main/java/ftc/team6460/javadeck/api/motion/PositionBasedDrivetrain.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="1386" max-vertical-offset="2670">
-              <caret line="176" column="59" selection-start-line="176" selection-start-column="59" selection-end-line="176" selection-end-column="59" />
+            <state vertical-scroll-proportion="0.02347418" vertical-offset="1230" max-vertical-offset="3855">
+              <caret line="83" column="12" selection-start-line="83" selection-start-column="12" selection-end-line="83" selection-end-column="12" />
               <folding>
+                <element signature="e#0#10114#0" expanded="true" />
                 <element signature="imports" expanded="true" />
-                <element signature="e#7301#7302#0" expanded="true" />
-                <element signature="e#7325#7326#0" expanded="true" />
-                <element signature="e#7410#7411#0" expanded="true" />
-                <element signature="e#7434#7435#0" expanded="true" />
-                <element signature="e#7508#7509#0" expanded="true" />
-                <element signature="e#7532#7533#0" expanded="true" />
+                <element signature="e#9879#9880#0" expanded="true" />
+                <element signature="e#9903#9904#0" expanded="true" />
+                <element signature="e#9988#9989#0" expanded="true" />
+                <element signature="e#10012#10013#0" expanded="true" />
+                <element signature="e#10086#10087#0" expanded="true" />
+                <element signature="e#10110#10111#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="UnencoderedMotor.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="VelocityDrivetrain.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/ftc/team6460/javadeck/api/motion/VelocityDrivetrain.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="705">
+              <caret line="47" column="0" selection-start-line="47" selection-start-column="0" selection-end-line="49" selection-end-column="135" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="HolonomicDrivetrain.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/ftc/team6460/javadeck/api/motion/impl/HolonomicDrivetrain.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="360" max-vertical-offset="1185">
+              <caret line="76" column="5" selection-start-line="76" selection-start-column="5" selection-end-line="76" selection-end-column="5" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ParallelDrivetrain.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/ftc/team6460/javadeck/api/motion/impl/ParallelDrivetrain.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="810">
+              <caret line="34" column="3" selection-start-line="34" selection-start-column="3" selection-end-line="34" selection-end-column="99" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="UnencoderedMotor.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/ftc/team6460/javadeck/api/motion/UnencoderedMotor.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.2112676" vertical-offset="0" max-vertical-offset="795">
-              <caret line="33" column="38" selection-start-line="33" selection-start-column="38" selection-end-line="33" selection-end-column="38" />
-              <folding>
-                <element signature="imports" expanded="false" />
-              </folding>
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="795">
+              <caret line="41" column="0" selection-start-line="41" selection-start-column="0" selection-end-line="43" selection-end-column="112" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -102,7 +152,7 @@
       <file leaf-file-name="EncoderedMotor.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/ftc/team6460/javadeck/api/motion/EncoderedMotor.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="315" max-vertical-offset="3270">
+            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="3270">
               <caret line="137" column="7" selection-start-line="137" selection-start-column="7" selection-end-line="137" selection-end-column="7" />
               <folding />
             </state>
@@ -380,10 +430,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/src/main/java/ftc/team6460/javadeck/api/Maintainable.java" />
-        <option value="$PROJECT_DIR$/src/main/java/ftc/team6460/javadeck/api/peripheral/RobotPeripheral.java" />
-        <option value="$PROJECT_DIR$/src/main/java/ftc/team6460/javadeck/api/peripheral/SensorPeripheral.java" />
-        <option value="$PROJECT_DIR$/src/main/java/ftc/team6460/javadeck/api/safety/SafetyPeripheral.java" />
         <option value="$PROJECT_DIR$/src/main/java/ftc/team6460/javadeck/api/safety/SafetyGroup.java" />
         <option value="$PROJECT_DIR$/src/main/java/ftc/team6460/javadeck/api/peripheral/EffectorPeripheral.java" />
         <option value="$PROJECT_DIR$/src/main/java/ftc/team6460/javadeck/api/SlewedDouble.java" />
@@ -428,9 +474,13 @@
         <option value="$PROJECT_DIR$/src/main/java/ftc/team6460/javadeck/api/planner/geom/Waypoint.java" />
         <option value="$PROJECT_DIR$/mapeditor/src/main/java/DijkstraTest.java" />
         <option value="$PROJECT_DIR$/src/main/java/ftc/team6460/javadeck/api/planner/geom/Field.java" />
-        <option value="$PROJECT_DIR$/src/main/java/ftc/team6460/javadeck/api/motion/MotionDrivetrain.java" />
         <option value="$PROJECT_DIR$/src/main/java/ftc/team6460/javadeck/api/motion/ParallelDrive.java" />
         <option value="$PROJECT_DIR$/src/main/java/ftc/team6460/javadeck/api/motion/UnencoderedMotor.java" />
+        <option value="$PROJECT_DIR$/src/main/java/ftc/team6460/javadeck/api/motion/MotionDrivetrain.java" />
+        <option value="$PROJECT_DIR$/src/main/java/ftc/team6460/javadeck/api/motion/VelocityDrivetrain.java" />
+        <option value="$PROJECT_DIR$/src/main/java/ftc/team6460/javadeck/api/motion/impl/ParallelDrivetrain.java" />
+        <option value="$PROJECT_DIR$/src/main/java/ftc/team6460/javadeck/api/motion/impl/HolonomicDrivetrain.java" />
+        <option value="$PROJECT_DIR$/src/main/java/ftc/team6460/javadeck/api/motion/PositionBasedDrivetrain.java" />
       </list>
     </option>
   </component>
@@ -492,6 +542,10 @@
       <sortByType />
     </navigator>
     <panes>
+      <pane id="PackagesPane">
+        <subPane />
+      </pane>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -694,16 +748,46 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="api" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="motion" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="impl" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="javadeck" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="javadeck" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
               <option name="myItemId" value="build" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
       </pane>
-      <pane id="PackagesPane">
-        <subPane />
-      </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -734,11 +818,11 @@
   </component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
+      <recent name="ftc.team6460.javadeck.api.motion" />
       <recent name="ftc.team6460.javadeck.api.planner.geom" />
       <recent name="ftc.team6460.javadeck.api.planner" />
       <recent name="ftc.team6460.javadeck.api.safety" />
       <recent name="ftc.team6460.javadeck.api" />
-      <recent name="ftc.team6460.javadeck.api.peripheral" />
     </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/mapeditor/target/natives" />
@@ -1174,7 +1258,7 @@
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3299595" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32953367" sideWeight="0.4997242" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.1632653" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.1632653" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Gradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.16712631" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -1230,27 +1314,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/main/java/ftc/team6460/javadeck/api/planner/Sensor.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.33279744" vertical-offset="123" max-vertical-offset="1080">
-          <caret line="44" column="18" selection-start-line="44" selection-start-column="18" selection-end-line="44" selection-end-column="18" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar:///usr/lib/jvm/java-8-oracle/src.zip!/java/util/ArrayList.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.33228347" vertical-offset="5654" max-vertical-offset="20925">
-          <caret line="428" column="0" selection-start-line="428" selection-start-column="0" selection-end-line="428" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/ftc/team6460/javadeck/api/safety/SafetyGroup.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.33215547" vertical-offset="757" max-vertical-offset="1710">
-          <caret line="91" column="8" selection-start-line="91" selection-start-column="8" selection-end-line="91" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/ftc/team6460/javadeck/api/planner/PositionIntegrator.java">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="2632" max-vertical-offset="5490">
@@ -1367,7 +1430,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="405">
           <caret line="27" column="122" selection-start-line="27" selection-start-column="122" selection-end-line="27" selection-end-column="122" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1539,7 +1601,18 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="1725" max-vertical-offset="3015">
           <caret line="141" column="36" selection-start-line="141" selection-start-column="36" selection-end-line="141" selection-end-column="36" />
-          <folding />
+          <folding>
+            <element signature="e#0#8290#0" expanded="false" />
+            <element signature="imports" expanded="false" />
+            <element signature="e#1542#1543#0" expanded="false" />
+            <element signature="e#1580#1581#0" expanded="false" />
+            <element signature="e#3420#3421#0" expanded="false" />
+            <element signature="e#3499#3500#0" expanded="false" />
+            <element signature="e#5614#5615#0" expanded="false" />
+            <element signature="e#5675#5676#0" expanded="false" />
+            <element signature="e#7847#7848#0" expanded="false" />
+            <element signature="e#7932#7933#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -1566,10 +1639,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/ftc/team6460/javadeck/api/motion/EncoderedMotor.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/ftc/team6460/javadeck/api/planner/RobotDrive.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="3270">
-          <caret line="137" column="7" selection-start-line="137" selection-start-column="7" selection-end-line="137" selection-end-column="7" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="1298" max-vertical-offset="1935">
+          <caret line="140" column="35" selection-start-line="140" selection-start-column="35" selection-end-line="140" selection-end-column="35" />
           <folding />
         </state>
       </provider>
@@ -1585,36 +1658,65 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/ftc/team6460/javadeck/api/planner/RobotDrive.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/ftc/team6460/javadeck/api/motion/UnencoderedMotor.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="1298" max-vertical-offset="1935">
-          <caret line="140" column="35" selection-start-line="140" selection-start-column="35" selection-end-line="140" selection-end-column="35" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="795">
+          <caret line="41" column="0" selection-start-line="41" selection-start-column="0" selection-end-line="43" selection-end-column="112" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/ftc/team6460/javadeck/api/motion/MotionDrivetrain.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/ftc/team6460/javadeck/api/motion/EncoderedMotor.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="1386" max-vertical-offset="2670">
-          <caret line="176" column="59" selection-start-line="176" selection-start-column="59" selection-end-line="176" selection-end-column="59" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="3270">
+          <caret line="137" column="7" selection-start-line="137" selection-start-column="7" selection-end-line="137" selection-end-column="7" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/ftc/team6460/javadeck/api/motion/impl/ParallelDrivetrain.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="810">
+          <caret line="34" column="3" selection-start-line="34" selection-start-column="3" selection-end-line="34" selection-end-column="99" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#7301#7302#0" expanded="true" />
-            <element signature="e#7325#7326#0" expanded="true" />
-            <element signature="e#7410#7411#0" expanded="true" />
-            <element signature="e#7434#7435#0" expanded="true" />
-            <element signature="e#7508#7509#0" expanded="true" />
-            <element signature="e#7532#7533#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/ftc/team6460/javadeck/api/motion/UnencoderedMotor.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/ftc/team6460/javadeck/api/motion/impl/HolonomicDrivetrain.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.2112676" vertical-offset="0" max-vertical-offset="795">
-          <caret line="33" column="38" selection-start-line="33" selection-start-column="38" selection-end-line="33" selection-end-column="38" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="360" max-vertical-offset="1185">
+          <caret line="76" column="5" selection-start-line="76" selection-start-column="5" selection-end-line="76" selection-end-column="5" />
           <folding>
-            <element signature="imports" expanded="false" />
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/ftc/team6460/javadeck/api/motion/VelocityDrivetrain.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="66" max-vertical-offset="705">
+          <caret line="47" column="0" selection-start-line="47" selection-start-column="0" selection-end-line="49" selection-end-column="135" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/ftc/team6460/javadeck/api/motion/PositionBasedDrivetrain.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.02347418" vertical-offset="1230" max-vertical-offset="3855">
+          <caret line="83" column="12" selection-start-line="83" selection-start-column="12" selection-end-line="83" selection-end-column="12" />
+          <folding>
+            <element signature="e#0#10114#0" expanded="true" />
+            <element signature="imports" expanded="true" />
+            <element signature="e#9879#9880#0" expanded="true" />
+            <element signature="e#9903#9904#0" expanded="true" />
+            <element signature="e#9988#9989#0" expanded="true" />
+            <element signature="e#10012#10013#0" expanded="true" />
+            <element signature="e#10086#10087#0" expanded="true" />
+            <element signature="e#10110#10111#0" expanded="true" />
           </folding>
         </state>
       </provider>

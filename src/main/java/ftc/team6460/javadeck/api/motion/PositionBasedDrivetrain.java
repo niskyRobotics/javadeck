@@ -24,19 +24,41 @@
 
 package ftc.team6460.javadeck.api.motion;
 
+import ftc.team6460.javadeck.api.motion.impl.HolonomicDrivetrain;
 import ftc.team6460.javadeck.api.peripheral.PeripheralCommunicationException;
 import ftc.team6460.javadeck.api.peripheral.PeripheralInoperableException;
 import ftc.team6460.javadeck.api.planner.*;
 
 /**
- * Represents a robot with two independently-controlled sides (pairs of wheels facing same direction,
- * tank treads, etc).
+ * Represents a drivetrain controlled by relative movements. Note: If an instance of HolonomicDrivetrain is passed, then this class will perform optimizations.
  */
-public class MotionDrivetrain extends RobotDrive {
+public class PositionBasedDrivetrain extends RobotDrive {
+    public PositionBasedDrivetrain(RobotPosition currentPosition, VelocityDrivetrain vd, double robotWidth, double accel, double maxSpeed) {
+        super(currentPosition);
+        this.vd = vd;
+        holonomicOptimization = vd instanceof HolonomicDrivetrain;
+        this.robotWidth = robotWidth;
+        this.accel = accel;
+        this.maxSpeed = maxSpeed;
+    }
 
-    // need encoders to function reliably. Assuming PID exists in the SDK. If not, I will have a TODO here for implementing it manually.
+    /**
+     * Constructs a drivetrain controller with holonomic optimizations force-disabled
+     */
+    public PositionBasedDrivetrain(RobotPosition currentPosition, VelocityDrivetrain vd, double robotWidth, double accel, double maxSpeed, boolean forceNoHolonomicOptimization) {
+        super(currentPosition);
+        this.vd = vd;
+        holonomicOptimization = false;
+        this.robotWidth = robotWidth;
+        this.accel = accel;
+        this.maxSpeed = maxSpeed;
+    }
 
-    private final EncoderedMotor left, right;
+    // need encoders to function reliably. PID known to exist in SDK
+
+    private final boolean holonomicOptimization;
+    private double holonomicAngleOffset = 0;
+    private final VelocityDrivetrain vd;
 
     /**
      * Robot width in meters
@@ -48,10 +70,6 @@ public class MotionDrivetrain extends RobotDrive {
      */
     private final double accel;
 
-    /**
-     * Raw speed to motor needed to reach 1 meter/sec.
-     */
-    private final double speedFactor;
 
     /**
      * Max speed allowed in meters/sec
@@ -59,19 +77,22 @@ public class MotionDrivetrain extends RobotDrive {
     private final double maxSpeed;
 
 
-    public MotionDrivetrain(RobotPosition currentPosition, EncoderedMotor left, EncoderedMotor right, double robotWidth, double accel, double speedFactor, double maxSpeed) {
-        super(currentPosition);
-        this.left = left;
-        this.right = right;
-        this.robotWidth = robotWidth;
-        this.accel = accel;
-        this.speedFactor = speedFactor;
-        this.maxSpeed = maxSpeed;
-    }
-
     // TODO handle obstacle collisions
     @Override
     protected void move0(RelativePosition travel, boolean suppressObstacles) throws RobotHardwareException, ObstacleException {
+        if (!holonomicOptimization) {
+            doStandardMove(travel);
+
+        } else {
+            doHolonomicOptimizedMove(travel);
+
+
+        }
+        this.collectedAngularDrift += travel.getTheta() / 1000;
+        this.collectedDrift += travel.getDistance() / 1000;
+    }
+
+    private void doStandardMove(RelativePosition travel) throws RobotHardwareException {
         double thetaNeeded = travel.getTheta();
         if (thetaNeeded != 0) {
             double circumDistance = Math.abs(thetaNeeded * robotWidth / 2);
@@ -79,8 +100,7 @@ public class MotionDrivetrain extends RobotDrive {
             double holdTime = (distDuringAccel * 2 - circumDistance) / maxSpeed;
             double accelTime = Math.sqrt(2 * distDuringAccel / accel);
             assert (holdTime >= 0) : "holding speed for negative time";
-            double lMtrSignum = Math.signum(circumDistance);
-            double rMtrSignum = -lMtrSignum;
+            double spdSignum = Math.signum(circumDistance);
             // 1/2 a t^2, but twice due to decel time as well
             assert (Math.abs(circumDistance - (accel * accelTime * accelTime + holdTime * maxSpeed)) < 0.001);
             assert (accelTime * accel <= maxSpeed);
@@ -95,29 +115,25 @@ public class MotionDrivetrain extends RobotDrive {
                     spd = millisNow * accel;
                     assert (spd <= maxSpeed);
                     millisNow = System.currentTimeMillis() - tStart;
-                    left.writeFast(spd * lMtrSignum);
-                    right.writeFast(spd * rMtrSignum);
+                    vd.spinInPlace(spd * spdSignum);
                     // hardware writes occur every 50msec
                     Thread.sleep(25);
                 }
 
                 while (millisNow < (accelTime + holdTime)) {
                     spd = maxSpeed;
-                    left.writeFast(spd * lMtrSignum);
-                    right.writeFast(spd * rMtrSignum);
+                    vd.spinInPlace(spd * spdSignum);
                 }
                 while (millisNow < (2 * accelTime + holdTime)) {
                     spd = (2 * accelTime + holdTime - millisNow) * accel;
                     assert (spd <= maxSpeed);
                     assert (spd >= 0);
                     millisNow = System.currentTimeMillis() - tStart;
-                    left.writeFast(spd * lMtrSignum);
-                    right.writeFast(spd * rMtrSignum);
+                    vd.spinInPlace(spd * spdSignum);
                     // hardware writes occur every 50msec
                     Thread.sleep(25);
                 }
-                left.write(0.0);
-                right.write(0.0);
+                vd.stopAll();
 
 
             } catch (InterruptedException | PeripheralInoperableException | PeripheralCommunicationException e) {
@@ -145,36 +161,77 @@ public class MotionDrivetrain extends RobotDrive {
                 spd = millisNow * accel;
                 assert (spd <= maxSpeed);
                 millisNow = System.currentTimeMillis() - tStart;
-                left.writeFast(spd);
-                right.writeFast(spd);
+                vd.setVelocity(spd);
                 // hardware writes occur every 50msec
                 Thread.sleep(25);
             }
 
             while (millisNow < (accelTime + holdTime)) {
                 spd = maxSpeed;
-                left.writeFast(spd);
-                right.writeFast(spd);
+                vd.setVelocity(spd);
             }
             while (millisNow < (2 * accelTime + holdTime)) {
                 spd = (2 * accelTime + holdTime - millisNow) * accel;
                 assert (spd <= maxSpeed);
                 assert (spd >= 0);
                 millisNow = System.currentTimeMillis() - tStart;
-                left.writeFast(spd);
-                right.writeFast(spd);
+                vd.setVelocity(spd);
                 // hardware writes occur every 50msec
                 Thread.sleep(25);
             }
-            left.write(0.0);
-            right.write(0.0);
+            vd.stopAll();
 
 
         } catch (InterruptedException | PeripheralInoperableException | PeripheralCommunicationException e) {
             throw new RobotHardwareException(e);
         }
-        this.collectedAngularDrift += travel.getTheta() / 1000;
-        this.collectedDrift += travel.getDistance() / 1000;
+    }
+
+    private void doHolonomicOptimizedMove(RelativePosition travel) throws RobotHardwareException {
+        // holonomic optimization
+        holonomicAngleOffset += travel.getTheta();
+        double distance = travel.getDistance();
+        double distDuringAccel = Math.max(0.5 * maxSpeed * maxSpeed / accel, distance / 2);
+        double holdTime = (distDuringAccel * 2 - distance) / maxSpeed;
+        double accelTime = Math.sqrt(2 * distDuringAccel / accel);
+        assert (holdTime >= 0) : "holding speed for negative time";
+
+        // 1/2 a t^2, but twice due to decel time as well
+        assert (Math.abs(distance - (accel * accelTime * accelTime + holdTime * maxSpeed)) < 0.001);
+        assert (accelTime * accel <= maxSpeed);
+
+
+        try {
+            long tStart = System.currentTimeMillis();
+            // accelerate
+            long millisNow = 0;
+            double spd;
+            while (millisNow < accelTime) {
+                spd = millisNow * accel;
+                assert (spd <= maxSpeed);
+                millisNow = System.currentTimeMillis() - tStart;
+                ((HolonomicDrivetrain) vd).set2DVelocity(spd * Math.cos(holonomicAngleOffset), spd * Math.sin(holonomicAngleOffset));
+                // hardware writes occur every 50msec
+                Thread.sleep(25);
+            }
+
+            while (millisNow < (accelTime + holdTime)) {
+                spd = maxSpeed;
+                ((HolonomicDrivetrain) vd).set2DVelocity(spd * Math.cos(holonomicAngleOffset), spd * Math.sin(holonomicAngleOffset));
+            }
+            while (millisNow < (2 * accelTime + holdTime)) {
+                spd = (2 * accelTime + holdTime - millisNow) * accel;
+                assert (spd <= maxSpeed);
+                assert (spd >= 0);
+                millisNow = System.currentTimeMillis() - tStart;
+                ((HolonomicDrivetrain) vd).set2DVelocity(spd * Math.cos(holonomicAngleOffset), spd * Math.sin(holonomicAngleOffset));
+                // hardware writes occur every 50msec
+                Thread.sleep(25);
+            }
+            vd.stopAll();
+        } catch (InterruptedException | PeripheralInoperableException | PeripheralCommunicationException e) {
+            throw new RobotHardwareException(e);
+        }
     }
 
     @Override
