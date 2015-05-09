@@ -24,7 +24,9 @@
 
 package ftc.team6460.javadeck.api.planner.geom;
 
+import ftc.team6460.javadeck.api.planner.ImmutableRobotPosition;
 import ftc.team6460.javadeck.api.planner.ObstacleException;
+import ftc.team6460.javadeck.api.planner.RelativePosition;
 
 import java.util.*;
 
@@ -159,6 +161,25 @@ public class Field {
 
     public Iterable<Waypoint> getWaypoints() {
         return Collections.unmodifiableSet(waypoints);
+    }
+
+    public List<RelativePosition> findPath(ImmutableRobotPosition s, ImmutableRobotPosition e) throws ObstacleException {
+        Waypoint st = getNearest(Point2D.fromRobotPosition(s));
+        Waypoint fin = getNearest(Point2D.fromRobotPosition(e));
+        List<RelativePosition> rV = new ArrayList<>();
+        List<Waypoint> waypoints = findPath(st, fin);
+        ImmutableRobotPosition current = s;
+        for(Waypoint w : waypoints){
+            ImmutableRobotPosition n = w.getPos().getAsRobotPos();
+            RelativePosition rp = RelativePosition.between(current, n);
+            rV.add(rp);
+            current = rp.apply(current).materialize();
+
+        }
+        rV.add(RelativePosition.between(current, e));
+        // finding will return both endpoints in correct order
+        //List<Waypoint>
+        return rV;
     }
 
     enum ZoneMode {

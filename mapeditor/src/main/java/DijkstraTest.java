@@ -23,6 +23,7 @@
  */
 
 import ftc.team6460.javadeck.api.planner.ObstacleException;
+import ftc.team6460.javadeck.api.planner.RelativePosition;
 import ftc.team6460.javadeck.api.planner.geom.DuplicateWaypointException;
 import ftc.team6460.javadeck.api.planner.geom.Field;
 import ftc.team6460.javadeck.api.planner.geom.Point2D;
@@ -78,6 +79,8 @@ public class DijkstraTest extends BasicGame {
             }
             if (c == 'f') {
                 foundPath = f.findPath(h1, h2);
+                List<RelativePosition> travels = f.findPath(h1.getPos().getAsRobotPos(), h2.getPos().getAsRobotPos());
+                System.out.println(travels);
             }
             if (c == 'd') {
                 h1.disconnect(h2);
@@ -129,6 +132,7 @@ public class DijkstraTest extends BasicGame {
         g.setColor(Color.blue);
         if (foundPath != null) {
             for (int i = 0; i < foundPath.size() - 1; i++) {
+                if(i!=0) g.setColor(Color.red);
                 g.drawLine(foundPath.get(i).getPos().getX(), foundPath.get(i).getPos().getY(), foundPath.get(i + 1).getPos().getX(), foundPath.get(i + 1).getPos().getY());
                 g.drawLine(foundPath.get(i).getPos().getX() + 1, foundPath.get(i).getPos().getY(), foundPath.get(i + 1).getPos().getX() + 1, foundPath.get(i + 1).getPos().getY());
                 g.drawLine(foundPath.get(i).getPos().getX() - 1, foundPath.get(i).getPos().getY(), foundPath.get(i + 1).getPos().getX() - 1, foundPath.get(i + 1).getPos().getY());

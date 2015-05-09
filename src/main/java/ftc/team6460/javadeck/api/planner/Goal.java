@@ -27,8 +27,10 @@ package ftc.team6460.javadeck.api.planner;
 
 /**
  * Describes a goal for a motion planner.
+ * @param <T> A class describing the robot's state
+ *
  */
-public abstract class Goal {
+public abstract class Goal<T> implements Comparable<Goal<T>>{
     private final ImmutableRobotPosition location;
 
     protected Goal(ImmutableRobotPosition location) {
@@ -46,7 +48,7 @@ public abstract class Goal {
      * @return The expected benefit.
      * @see ftc.team6460.javadeck.api.planner Information on cost and benefit units
      */
-    public abstract double computeBenefit(RobotState state);
+    public abstract double computeBenefit(T state, GoalPlanner g);
 
     /**
      * Acts when the robot is in position at this goal. This should take any actions to be done when at the goal, such
@@ -55,6 +57,6 @@ public abstract class Goal {
      * @param pos   The current computed robot position.
      * @param state The robot's current state.
      */
-    public abstract void act(RobotPosition pos, RobotState state);
+    public abstract void act(RobotPosition pos, T state, GoalPlanner g);
 
 }

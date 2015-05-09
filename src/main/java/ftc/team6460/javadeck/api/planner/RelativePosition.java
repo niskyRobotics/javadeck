@@ -31,6 +31,14 @@ public class RelativePosition {
     private final double distance;
     private final double theta;
 
+    @Override
+    public String toString() {
+        return "RelativePosition{" +
+                "distance=" + distance +
+                ", theta=" + theta +
+                '}';
+    }
+
     /**
      * Returns the distance in meters.
      */
@@ -84,6 +92,13 @@ public class RelativePosition {
                 return new ImmutableRobotPosition(this.getX(), this.getY(), this.getTheta());
             }
         };
+    }
+
+    public static RelativePosition between(RobotPosition start, RobotPosition end) {
+        double dist = Math.hypot(start.getX() - end.getX(), start.getY() - end.getY());
+        double thetaRaw = Math.atan2(end.getY() - start.getY(), end.getX() - start.getX());
+        double thetaToTurn = Math.IEEEremainder(start.getTheta()-thetaRaw, 2 * Math.PI);
+        return new RelativePosition(dist, thetaToTurn);
     }
 
 }
