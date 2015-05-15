@@ -80,14 +80,14 @@ public class PositionBasedDrivetrain extends RobotDrive {
     // TODO handle obstacle collisions
     @Override
     protected void move0(RelativePosition travel, boolean suppressObstacles) throws RobotHardwareException, ObstacleException {
-        if (!holonomicOptimization) {
-            doStandardMove(travel);
+        //if (!holonomicOptimization) {
+        doStandardMove(travel);
+//
+        //} else {
+        //     doHolonomicOptimizedMove(travel);
 
-        } else {
-            doHolonomicOptimizedMove(travel);
 
-
-        }
+        //}
         this.collectedAngularDrift += travel.getTheta() / 1000;
         this.collectedDrift += travel.getDistance() / 1000;
     }
@@ -189,7 +189,8 @@ public class PositionBasedDrivetrain extends RobotDrive {
 
     private void doHolonomicOptimizedMove(RelativePosition travel) throws RobotHardwareException {
         // holonomic optimization
-        holonomicAngleOffset += travel.getTheta();
+        // negative due to choice of orientation
+        holonomicAngleOffset -= travel.getTheta();
         double distance = travel.getDistance();
         double distDuringAccel = Math.max(0.5 * maxSpeed * maxSpeed / accel, distance / 2);
         double holdTime = (distDuringAccel * 2 - distance) / maxSpeed;

@@ -37,7 +37,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * Represents a motor with an encoder. The encoder is currently assumed to be relative and resettable. If it is not, the implementer must implement appropriate logic.
  * Subclasses must be thread-safe.
  */
-public abstract class EncoderedMotor implements EffectorPeripheral<Double>, SensorPeripheral<Double, Void>, SafetyPeripheral {
+public abstract class EncoderedMotor extends UnencoderedMotor implements EffectorPeripheral<Double>, SensorPeripheral<Double, Void>, SafetyPeripheral {
 
     protected volatile SafetyGroup safetyGroup;
 
@@ -87,7 +87,7 @@ public abstract class EncoderedMotor implements EffectorPeripheral<Double>, Sens
      *
      * @param val The value to write
      */
-    protected abstract void doWrite(double val);
+    protected abstract void doWrite(double val)  throws InterruptedException, PeripheralCommunicationException, PeripheralInoperableException;
 
     /**
      * Resets the encoder to zero. This method should not be called after a time less
@@ -147,11 +147,6 @@ public abstract class EncoderedMotor implements EffectorPeripheral<Double>, Sens
     private double encoderLastTime = System.nanoTime();
 
     private double encoderLastPosition = 0.0;
-    private AtomicReference<EncoderControl> controlType = new AtomicReference<>(EncoderControl.CTRL_NONE);
-
-    public void setControlType(EncoderControl type) {
-        this.controlType.set(type);
-    }
 
     @Override
     public void setup() {
@@ -169,7 +164,7 @@ public abstract class EncoderedMotor implements EffectorPeripheral<Double>, Sens
 
     @Override
     public boolean checkSafety() {
-
+        if(this.antiStallThreshold ==0) return true;
         if (this.earliestReactivation > System.nanoTime()) {
             try {
                 encoderLastPosition = this.read(null);
@@ -181,7 +176,7 @@ public abstract class EncoderedMotor implements EffectorPeripheral<Double>, Sens
         }
 
         synchronized (this) {
-            if (controlType.get() != EncoderControl.CTRL_STALL) return true;
+
             if (this.currentVelocity < maxStallPower) return true;
             if (System.nanoTime() - encoderLastTime < antiStallTimeout) {
                 return true;
