@@ -25,17 +25,18 @@
 package ftc.team6460.javadeck.api.planner;
 
 import ftc.team6460.javadeck.api.planner.geom.Field;
-import ftc.team6460.javadeck.api.planner.geom.Point2D;
 
-import javax.swing.text.Position;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * Contains a planner for goals.
  */
 public class GoalPlanner<T> {
-    private List<Goal<T>> goals = new ArrayList<Goal<T>>();
-    private T currentState;
+    private final List<Goal<T>> goals = new ArrayList<>();
+    private final T currentState;
     private final RobotDrive drive;
     private final PositionIntegrator integrator;
     private final Field field;
@@ -45,7 +46,7 @@ public class GoalPlanner<T> {
      *
      * @param initialState The robot's initial state
      * @param drive        The drivetrain to use in driving the robot to goals
-     * @param integrator
+     * @param integrator    The position integrator to use.
      * @param f            A description of the field
      */
     public GoalPlanner(T initialState, RobotDrive drive, PositionIntegrator integrator, Field f) {
@@ -70,7 +71,7 @@ public class GoalPlanner<T> {
     }
 
     protected synchronized Goal<T> getBestGoal() {
-        goals.sort(new Comparator<Goal<T>>() {
+        Collections.sort(goals, new Comparator<Goal<T>>() {
             @Override
             public int compare(Goal<T> o1, Goal<T> o2) {
                 return Double.compare(o1.computeBenefit(GoalPlanner.this.currentState, GoalPlanner.this),
@@ -99,7 +100,7 @@ public class GoalPlanner<T> {
             while (run) {
                 Goal<T> goal = GoalPlanner.this.getBestGoal();
                 List<LocationCandidate> bestMatches = GoalPlanner.this.integrator.getCandidates(0.9);
-                bestMatches.sort(new Comparator<LocationCandidate>() {
+                Collections.sort(bestMatches, new Comparator<LocationCandidate>() {
                     @Override
                     public int compare(LocationCandidate o1, LocationCandidate o2) {
                         return Double.compare(o1.getCorrelationStrength(), o2.getCorrelationStrength());
@@ -112,7 +113,7 @@ public class GoalPlanner<T> {
                         drive.move(rp, false);
                     }
                     List<LocationCandidate> bestMatchesAfter = GoalPlanner.this.integrator.getCandidates(0.9);
-                    bestMatchesAfter.sort(new Comparator<LocationCandidate>() {
+                    Collections.sort(bestMatchesAfter, new Comparator<LocationCandidate>() {
                         @Override
                         public int compare(LocationCandidate o1, LocationCandidate o2) {
                             return Double.compare(o1.getCorrelationStrength(), o2.getCorrelationStrength());

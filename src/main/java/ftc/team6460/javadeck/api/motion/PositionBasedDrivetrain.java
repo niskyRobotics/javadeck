@@ -42,17 +42,18 @@ public class PositionBasedDrivetrain extends RobotDrive {
         this.maxSpeed = maxSpeed;
     }
 
-    /**
+    /* *
      * Constructs a drivetrain controller with holonomic optimizations force-disabled
      */
-    public PositionBasedDrivetrain(RobotPosition currentPosition, VelocityDrivetrain vd, double robotWidth, double accel, double maxSpeed, boolean forceNoHolonomicOptimization) {
+    /*
+    public PositionBasedDrivetrain(RobotPosition currentPosition, VelocityDrivetrain vd, double robotWidth, double accel, double maxSpeed) {
         super(currentPosition);
         this.vd = vd;
         holonomicOptimization = false;
         this.robotWidth = robotWidth;
         this.accel = accel;
         this.maxSpeed = maxSpeed;
-    }
+    }*/
 
     // need encoders to function reliably. PID known to exist in SDK
 

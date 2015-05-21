@@ -35,5 +35,5 @@ public interface ObstacleSensor {
      * @param pos The relative position to the current physical robot position to check.
      * @return True if obstacle detected, false if no obstacle detected, or this position cannot be sensed by this sensor.
      */
-    public boolean checkObstacle(RelativePosition pos);
+    boolean checkObstacle(RelativePosition pos);
 }

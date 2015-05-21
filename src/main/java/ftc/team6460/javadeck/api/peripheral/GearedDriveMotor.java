@@ -28,7 +28,7 @@ import ftc.team6460.javadeck.api.motion.EncoderedMotor;
 import ftc.team6460.javadeck.api.safety.SafetyGroup;
 
 /**
- * Created by hexafraction on 5/15/15.
+ * Represents gearing on a drive motor.
  */
 public class GearedDriveMotor extends EncoderedMotor {
     private final double driveFactor, encoderFactor;

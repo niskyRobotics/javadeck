@@ -176,6 +176,7 @@ public class PositionIntegrator {
     }
 
     // actually checks if this max is at least correlatorMinSNR the surrounding average
+    @SuppressWarnings("RedundantIfStatement")
     private boolean checkRelMax(int x, int y) {
         double max = tiles[x][y].getMax();
         if (max < (correlatorMinSNR * getSafeAvg(x + 1, y - 1)) && max < islandMinAbsolute) return false;
@@ -279,7 +280,7 @@ public class PositionIntegrator {
         private static final IntPair COARSE_POSITION = new IntPair(FINE_STEPS_IN_EACH_DIRECTION, FINE_STEPS_IN_EACH_DIRECTION);
 
         double coarse;
-        double[][] fine;
+        final double[][] fine;
         boolean hasFine = false;
 
         Tile(int fineSubdivs) {

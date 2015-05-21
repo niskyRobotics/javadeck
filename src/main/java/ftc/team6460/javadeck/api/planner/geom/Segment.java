@@ -28,8 +28,8 @@ package ftc.team6460.javadeck.api.planner.geom;
  * Created by hexafraction on 4/11/15.
  */
 public class Segment {
-    Point2D p0;
-    Point2D p1;
+    final Point2D p0;
+    final Point2D p1;
 
     @Override
     public boolean equals(Object o) {

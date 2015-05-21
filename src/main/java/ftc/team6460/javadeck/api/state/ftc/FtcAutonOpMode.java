@@ -24,13 +24,14 @@
 
 package ftc.team6460.javadeck.api.state.ftc;
 
-import ftc.team6460.javadeck.api.motion.PositionBasedDrivetrain;
-import ftc.team6460.javadeck.api.planner.GoalPlanner;
-
 /**
  * OpMode implementation for FTC auton mode.
  */
 public class FtcAutonOpMode<T> extends FtcBaseOpMode {
+    @Override
+    protected void doActions() {
+        //TODO
+    }
     //private final PositionBasedDrivetrain drive;
     //private final GoalPlanner<T> planner;
 }

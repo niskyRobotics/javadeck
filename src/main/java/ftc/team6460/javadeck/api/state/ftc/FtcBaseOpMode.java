@@ -24,16 +24,13 @@
 
 package ftc.team6460.javadeck.api.state.ftc;
 
-import ftc.team6460.javadeck.api.motion.EncoderedMotor;
-import ftc.team6460.javadeck.api.motion.UnencoderedMotor;
 import ftc.team6460.javadeck.api.peripheral.impl.FtcImplEncoderedMotor;
-import ftc.team6460.javadeck.api.peripheral.impl.FtcMotorId;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by hexafraction on 5/12/15.
+ * Base class for all Javadeck-based op modes for FTC.
  */
 public abstract class FtcBaseOpMode /*extends OpMode*/ {
 
@@ -45,8 +42,7 @@ public abstract class FtcBaseOpMode /*extends OpMode*/ {
     private final Map<String, FtcImplEncoderedMotor> motors = new HashMap<>();
 
     public synchronized FtcImplEncoderedMotor getMotor(String mid) {
-        UnencoderedMotor mtr = motors.get(mid);
-        if (mid != null) return this.createMotor0(mid);
+        // completely redo
         return null;
     }
 

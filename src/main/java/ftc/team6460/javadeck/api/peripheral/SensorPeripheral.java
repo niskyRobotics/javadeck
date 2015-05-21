@@ -33,7 +33,7 @@ public interface SensorPeripheral<T, P> extends RobotPeripheral {
      * @throws PeripheralCommunicationException If the sensor cannot be communicated with.
      * @throws PeripheralInoperableException    If the sensor is inoperable.
      */
-    public T read(P params) throws InterruptedException, PeripheralCommunicationException, PeripheralInoperableException;
+    T read(P params) throws InterruptedException, PeripheralCommunicationException, PeripheralInoperableException;
 
     /**
      * Calibrates or resets the sensor.
@@ -45,5 +45,5 @@ public interface SensorPeripheral<T, P> extends RobotPeripheral {
      * @throws PeripheralCommunicationException If the sensor cannot be communicated with.
      * @throws PeripheralInoperableException    If the sensor is inoperable.
      */
-    public void calibrate(T val, P params) throws InterruptedException, UnsupportedOperationException, PeripheralInoperableException, PeripheralCommunicationException;
+    void calibrate(T val, P params) throws InterruptedException, UnsupportedOperationException, PeripheralInoperableException, PeripheralCommunicationException;
 }

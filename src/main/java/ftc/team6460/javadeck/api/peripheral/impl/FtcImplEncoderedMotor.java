@@ -30,7 +30,7 @@ import ftc.team6460.javadeck.api.peripheral.PeripheralInoperableException;
 import ftc.team6460.javadeck.api.safety.SafetyGroup;
 
 /**
- * Created by hexafraction on 5/15/15.
+ * FTC SDK glue for an encodered motor
  */
 public class FtcImplEncoderedMotor extends EncoderedMotor {
     private volatile double val;

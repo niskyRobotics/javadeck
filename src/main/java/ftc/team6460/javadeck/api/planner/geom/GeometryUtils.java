@@ -143,6 +143,7 @@ public class GeometryUtils {
      * @param s <i>Collinear</i> segment
      * @return True if point is on segment
      */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean inSegment(Point2D p, Segment s) {
         if (s.p0.x != s.p1.x) {    // s is not  vertical
             if (s.p0.x <= p.x && p.x <= s.p1.x)

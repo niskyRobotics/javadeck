@@ -31,12 +31,13 @@ import ftc.team6460.javadeck.api.peripheral.SensorPeripheral;
 import ftc.team6460.javadeck.api.safety.SafetyGroup;
 import ftc.team6460.javadeck.api.safety.SafetyPeripheral;
 
-import java.util.concurrent.atomic.AtomicReference;
-
 /**
  * Represents a motor with an encoder. The encoder is currently assumed to be relative and resettable. If it is not, the implementer must implement appropriate logic.
  * Subclasses must be thread-safe.
+ *
  */
+
+// TODO refactor heck out of this class
 public abstract class EncoderedMotor extends UnencoderedMotor implements EffectorPeripheral<Double>, SensorPeripheral<Double, Void>, SafetyPeripheral {
 
     protected volatile SafetyGroup safetyGroup;

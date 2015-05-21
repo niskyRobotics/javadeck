@@ -51,9 +51,7 @@ public class DijkstraTest extends BasicGame {
 
         if (button == 0) try {
             f.addWaypoint(Waypoint.fromPos(new Point2D(x, y)));
-        } catch (DuplicateWaypointException e) {
-            e.printStackTrace();
-        } catch (ObstacleException e) {
+        } catch (DuplicateWaypointException | ObstacleException e) {
             e.printStackTrace();
         }
         if (button == 1) {
