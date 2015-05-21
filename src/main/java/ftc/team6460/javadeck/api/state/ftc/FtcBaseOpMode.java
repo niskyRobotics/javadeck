@@ -24,7 +24,7 @@
 
 package ftc.team6460.javadeck.api.state.ftc;
 
-import ftc.team6460.javadeck.api.peripheral.impl.FtcImplEncoderedMotor;
+import ftc.team6460.javadeck.api.motion.EncoderedMotor;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,14 +39,14 @@ public abstract class FtcBaseOpMode /*extends OpMode*/ {
      */
     protected abstract void doActions();
 
-    private final Map<String, FtcImplEncoderedMotor> motors = new HashMap<>();
+    private final Map<String, EncoderedMotor> motors = new HashMap<>();
 
-    public synchronized FtcImplEncoderedMotor getMotor(String mid) {
+    public synchronized EncoderedMotor getMotor(String mid) {
         // completely redo
         return null;
     }
 
-    private FtcImplEncoderedMotor createMotor0(String mid) {
+    private EncoderedMotor createMotor0(String mid) {
         // do something with hardware map
         return null;
     }

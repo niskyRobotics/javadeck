@@ -34,7 +34,7 @@ import ftc.team6460.javadeck.api.safety.SafetyGroup;
  * A motor that can reach a specific absolute position, and optionally maintain it (compensating for external forces as needed)
  */
 public abstract class ServoFeedbackMotor implements EffectorPeripheral<Double>, SensorPeripheral<Double, Void> {
-    private final EncoderedMotor inner;
+    private final AntiStallFilter inner;
 
     private final double correctionFactor;
 
@@ -44,7 +44,7 @@ public abstract class ServoFeedbackMotor implements EffectorPeripheral<Double>, 
 
     private double currentGoal;
 
-    private int currentDirectionSignum = 0;
+    private int currentDirectionSignum;
 
     private final double maxPower;
 
@@ -58,7 +58,7 @@ public abstract class ServoFeedbackMotor implements EffectorPeripheral<Double>, 
     @Override
     public void write(Double input) throws InterruptedException, PeripheralCommunicationException, PeripheralInoperableException {
         this.doWrite(input);
-        while ((Math.abs(currentGoal - read(null)) > maxErrorTolerance)) {
+        while (Math.abs(this.currentGoal - this.read(null)) > this.maxErrorTolerance) {
             Thread.sleep(100);
         }
     }
@@ -80,14 +80,14 @@ public abstract class ServoFeedbackMotor implements EffectorPeripheral<Double>, 
                     power = 0;
                 }
                 int newDirectionSignum = (int) Math.signum(power);
-                if ((newDirectionSignum == -currentDirectionSignum) || newDirectionSignum == 0) {
+                if (newDirectionSignum == -this.currentDirectionSignum || newDirectionSignum == 0) {
                     if (!holdAtPosition) {
                         this.isActivelySeeking = false;
                         power = 0;
                     }
                 }
                 power = Math.signum(power) * Math.max(Math.abs(maxPower), Math.abs(power));
-                currentDirectionSignum = (int)Math.signum(power);
+                currentDirectionSignum = (int) Math.signum(power);
                 inner.writeFast(power);
 
             } catch (Exception e) {
@@ -105,11 +105,10 @@ public abstract class ServoFeedbackMotor implements EffectorPeripheral<Double>, 
      * @param maxPower          The maximum drive power acceptable for this motor.
      * @param maxErrorTolerance The maximum deviation, in encoder counts between the goal and actual, that is allowed.
      */
-    public ServoFeedbackMotor(EncoderedMotor inner, double correctionFactor, double maxPower, double maxErrorTolerance) {
+    public ServoFeedbackMotor(AntiStallFilter inner, double correctionFactor, double maxPower, double maxErrorTolerance) {
         this.inner = inner;
         this.correctionFactor = correctionFactor;
         this.maxPower = maxPower;
-        inner.setControlType(EncoderedMotor.EncoderControl.CTRL_STALL);
         this.maxErrorTolerance = maxErrorTolerance;
     }
 

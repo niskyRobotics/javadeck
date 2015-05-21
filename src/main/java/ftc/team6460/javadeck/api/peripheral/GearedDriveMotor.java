@@ -24,6 +24,7 @@
 
 package ftc.team6460.javadeck.api.peripheral;
 
+import ftc.team6460.javadeck.api.motion.AntiStallFilter;
 import ftc.team6460.javadeck.api.motion.EncoderedMotor;
 import ftc.team6460.javadeck.api.safety.SafetyGroup;
 
@@ -39,20 +40,24 @@ public class GearedDriveMotor extends EncoderedMotor {
      * @param encoderFactor The number of encoder ticks per meter of movement.
      * @param delegate The actual motor to use.
      */
-    public GearedDriveMotor(double driveFactor, double encoderFactor, EncoderedMotor delegate) {
-        super(0, Double.MAX_VALUE, Double.MAX_VALUE, 0);
+    public GearedDriveMotor(double driveFactor, double encoderFactor, AntiStallFilter delegate) {
         this.driveFactor = driveFactor;
         this.encoderFactor = encoderFactor;
         this.delegate = delegate;
     }
 
-    private final EncoderedMotor delegate;
+    private final AntiStallFilter delegate;
 
     @Override
     public void doWrite(double val) throws InterruptedException, PeripheralCommunicationException, PeripheralInoperableException {
 
-        delegate.writeFast(val/driveFactor);
+        delegate.writeFast(val / driveFactor);
 
+    }
+
+    @Override
+    public void safetyShutdown(long nanos) throws InterruptedException, PeripheralCommunicationException, PeripheralInoperableException {
+        this.writeFast(0.0);
     }
 
     @Override
@@ -62,11 +67,21 @@ public class GearedDriveMotor extends EncoderedMotor {
 
     @Override
     public Double read(Void params) throws InterruptedException, PeripheralCommunicationException, PeripheralInoperableException {
-        return delegate.read(params)/encoderFactor;
+        return delegate.read(params) / encoderFactor;
     }
 
     @Override
     public void calibrate(Double val, Void params) throws InterruptedException, UnsupportedOperationException, PeripheralInoperableException, PeripheralCommunicationException {
-        delegate.calibrate(val*encoderFactor, params);
+        delegate.calibrate(val * encoderFactor, params);
+    }
+
+    @Override
+    public boolean checkSafety() {
+        return delegate.checkSafety();
+    }
+
+    @Override
+    public void setup() {
+
     }
 }

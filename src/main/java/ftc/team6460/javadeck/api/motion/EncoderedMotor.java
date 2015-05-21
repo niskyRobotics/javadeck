@@ -24,7 +24,6 @@
 
 package ftc.team6460.javadeck.api.motion;
 
-import ftc.team6460.javadeck.api.peripheral.EffectorPeripheral;
 import ftc.team6460.javadeck.api.peripheral.PeripheralCommunicationException;
 import ftc.team6460.javadeck.api.peripheral.PeripheralInoperableException;
 import ftc.team6460.javadeck.api.peripheral.SensorPeripheral;
@@ -32,13 +31,9 @@ import ftc.team6460.javadeck.api.safety.SafetyGroup;
 import ftc.team6460.javadeck.api.safety.SafetyPeripheral;
 
 /**
- * Represents a motor with an encoder. The encoder is currently assumed to be relative and resettable. If it is not, the implementer must implement appropriate logic.
- * Subclasses must be thread-safe.
- *
+ * Created by akh06977 on 2015.21.05.
  */
-
-// TODO refactor heck out of this class
-public abstract class EncoderedMotor extends UnencoderedMotor implements EffectorPeripheral<Double>, SensorPeripheral<Double, Void>, SafetyPeripheral {
+public abstract class EncoderedMotor extends UnencoderedMotor implements SensorPeripheral<Double, Void>, SafetyPeripheral {
 
     protected volatile SafetyGroup safetyGroup;
 
@@ -50,8 +45,8 @@ public abstract class EncoderedMotor extends UnencoderedMotor implements Effecto
      *
      * @param input The speed for the motor to reach.
      * @throws InterruptedException                                                  If interrupted waiting for the effector to reach its target value.
-     * @throws ftc.team6460.javadeck.api.peripheral.PeripheralCommunicationException If the motor cannot be communicated with.
-     * @throws ftc.team6460.javadeck.api.peripheral.PeripheralInoperableException    If the motor is inoperable.
+     * @throws PeripheralCommunicationException If the motor cannot be communicated with.
+     * @throws PeripheralInoperableException    If the motor is inoperable.
      */
     @Override
     public void write(Double input) throws InterruptedException, PeripheralCommunicationException, PeripheralInoperableException {
@@ -72,15 +67,12 @@ public abstract class EncoderedMotor extends UnencoderedMotor implements Effecto
     @Override
     public void writeFast(Double input) throws InterruptedException, PeripheralCommunicationException, PeripheralInoperableException {
         synchronized (this) {
-            if (System.nanoTime() < earliestReactivation) {
-                return;
-            }
             this.currentVelocity = input;
             this.doWrite(input);
         }
     }
 
-    protected double currentVelocity = 0.0;
+    protected double currentVelocity;
 
 
     /**
@@ -100,142 +92,11 @@ public abstract class EncoderedMotor extends UnencoderedMotor implements Effecto
     public void resetEncoder() throws InterruptedException, PeripheralCommunicationException, PeripheralInoperableException {
         synchronized (this) {
             this.calibrate(0.0, null);
-            this.resetSafety();
-        }
-    }
-
-    public final double antiStallThreshold;
-    public final double antiStallTimeout;
-    public final double maxStallPower;
-    public final int encoderDirection;
-
-    /**
-     * Constructs a new encodered motor.
-     *
-     * @param safetyGroup        The safety group to join.
-     * @param antiStallThreshold The minimum encoder distance that is considered a non-stalled motor.
-     * @param antiStallTimeout   How long encoder motion can remain under the threshold before a stall is considered, nanoseconds.
-     * @param maxStallPower      The maximum power at which stall prevention will not be performed.
-     * @param encoderDirection   +1 if a positive power will cause the encoder reading to increase, -1 otherwise.
-     */
-    public EncoderedMotor(SafetyGroup safetyGroup, double antiStallThreshold, double antiStallTimeout, double maxStallPower, int encoderDirection) {
-
-        this.safetyGroup = safetyGroup;
-
-        this.antiStallThreshold = antiStallThreshold;
-        this.antiStallTimeout = antiStallTimeout;
-        this.maxStallPower = maxStallPower;
-        this.encoderDirection = encoderDirection;
-        safetyGroup.registerEffector(this);
-    }
-
-    /**
-     * Constructs a new encodered motor.
-     *
-     * @param antiStallThreshold The minimum encoder distance that is considered a non-stalled motor.
-     * @param antiStallTimeout   How long encoder motion can remain under the threshold before a stall is considered, nanoseconds.
-     * @param maxStallPower      The maximum power at which stall prevention will not be performed.
-     * @param encoderDirection   +1 if a positive power will cause the encoder reading to increase, -1 otherwise.
-     */
-    public EncoderedMotor(double antiStallThreshold, double antiStallTimeout, double maxStallPower, int encoderDirection) {
-
-        this.antiStallThreshold = antiStallThreshold;
-        this.antiStallTimeout = antiStallTimeout;
-        this.maxStallPower = maxStallPower;
-        this.encoderDirection = encoderDirection;
-    }
-
-    private double encoderLastTime = System.nanoTime();
-
-    private double encoderLastPosition = 0.0;
-
-    @Override
-    public void setup() {
-        encoderLastTime = System.nanoTime();
-    }
-
-    /*package-private*/ void resetSafety() {
-        try {
-            encoderLastPosition = this.read(null);
-            encoderLastTime = System.nanoTime();
-        } catch (Throwable e) {
-            // noop
-        }
-    }
-
-    @Override
-    public boolean checkSafety() {
-        if(this.antiStallThreshold ==0) return true;
-        if (this.earliestReactivation > System.nanoTime()) {
-            try {
-                encoderLastPosition = this.read(null);
-                encoderLastTime = System.nanoTime();
-            } catch (Throwable e) {
-                // noop
-            }
-            return true; // no new safety issue
-        }
-
-        synchronized (this) {
-
-            if (this.currentVelocity < maxStallPower) return true;
-            if (System.nanoTime() - encoderLastTime < antiStallTimeout) {
-                return true;
-            }
-            try {
-                double newVal = this.read(null);
-                if ((newVal - encoderLastPosition) / Math.signum(currentVelocity / encoderDirection) > antiStallThreshold) {
-                    encoderLastPosition = newVal;
-                    encoderLastTime = System.nanoTime();
-                    return true;
-                } else {
-                    return false;
-                }
-            } catch (Throwable e) {
-                return false;
-            }
         }
     }
 
 
-    private volatile long earliestReactivation = 0;
 
-    @Override
-    public void safetyShutdown(long nanos) throws InterruptedException, PeripheralCommunicationException, PeripheralInoperableException {
-        this.writeFast(0.0);
-        this.earliestReactivation = System.nanoTime() + nanos;
-    }
 
-    /**
-     * Called each event loop.
-     */
-    @Override
-    public void loop() {
-        if (!this.checkSafety()) try {
-            safetyGroup.safetyShutdown(1_000_000_000); // default
-        } catch (Throwable e) {
-            e.printStackTrace();
-        }
-    }
-
-    public enum EncoderControl {
-        /**
-         * No encoder feedback, only reads supported.
-         */
-        CTRL_NONE,
-        /**
-         * PID control (currently contigent on hardware API support)
-         */
-        CTRL_PID,
-        /**
-         * Encoder servo feedback hold.
-         */
-        CTRL_SRVO,
-        /**
-         * Stall protection--detection of non-movement of motor
-         */
-        CTRL_STALL
-
-    }
 
 }
