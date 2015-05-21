@@ -11,3 +11,6 @@ gradle-app.setting
 *.class
 *.dylib
 *.jnilib
+javadeck.iml
+.idea/
+*.iml
