@@ -22,16 +22,11 @@
  * THE SOFTWARE.
  */
 
-package ftc.team6460.javadeck.api.planner;
-
-import java.util.List;
+package ftc.team6460.javadeck.api;
 
 /**
- * Interface for a class that can find likely robot positions.
+ * Accepts {@link Maintainable} objects, sets them up, and maintains them.
  */
-public interface PositionIntegrator {
-    /**
-     * Returns a list of positions, in no particular order, that describes likely robot positions.
-     */
-    List<LocationCandidate> getCandidates(double minCorr);
+public interface Maintainer {
+    public void accept(Maintainable m);
 }

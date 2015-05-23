@@ -44,7 +44,7 @@ public class PositionIntegratorTest {
         FakeYHill yH = new FakeYHill(Math.E);
         sens.add(xH);
         sens.add(yH);
-        PositionIntegrator integ = new PositionIntegrator(sens, 10, 10);
+        PositionIntegrator integ = new WeightedAveragePositionIntegrator(sens, 10, 10);
         List<LocationCandidate> cands = integ.getCandidates(0.95);
         Collections.sort(cands, new Comparator<LocationCandidate>() {
             @Override
@@ -88,7 +88,7 @@ public class PositionIntegratorTest {
         FakeYHill yH = new FakeYHill(Math.E);
         sens.add(xH);
         sens.add(yH);
-        PositionIntegrator integ = new PositionIntegrator(sens, 10, 10);
+        PositionIntegrator integ = new WeightedAveragePositionIntegrator(sens, 10, 10);
         List<LocationCandidate> cands = integ.getCandidates(0.95);
         Collections.sort(cands, new Comparator<LocationCandidate>() {
             @Override

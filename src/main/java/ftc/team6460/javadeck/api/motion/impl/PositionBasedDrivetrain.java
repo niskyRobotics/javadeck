@@ -22,8 +22,9 @@
  * THE SOFTWARE.
  */
 
-package ftc.team6460.javadeck.api.motion;
+package ftc.team6460.javadeck.api.motion.impl;
 
+import ftc.team6460.javadeck.api.motion.VelocityDrivetrain;
 import ftc.team6460.javadeck.api.motion.impl.HolonomicDrivetrain;
 import ftc.team6460.javadeck.api.peripheral.PeripheralCommunicationException;
 import ftc.team6460.javadeck.api.peripheral.PeripheralInoperableException;

@@ -22,8 +22,10 @@
  * THE SOFTWARE.
  */
 
-package ftc.team6460.javadeck.api.motion;
+package ftc.team6460.javadeck.api.motion.impl;
 
+import ftc.team6460.javadeck.api.motion.EncoderedMotor;
+import ftc.team6460.javadeck.api.motion.impl.AntiStallFilter;
 import ftc.team6460.javadeck.api.peripheral.EffectorPeripheral;
 import ftc.team6460.javadeck.api.peripheral.PeripheralCommunicationException;
 import ftc.team6460.javadeck.api.peripheral.PeripheralInoperableException;
@@ -34,7 +36,7 @@ import ftc.team6460.javadeck.api.safety.SafetyGroup;
  * A motor that can reach a specific absolute position, and optionally maintain it (compensating for external forces as needed)
  */
 public abstract class ServoFeedbackMotor implements EffectorPeripheral<Double>, SensorPeripheral<Double, Void> {
-    private final AntiStallFilter inner;
+    private final EncoderedMotor inner;
 
     private final double correctionFactor;
 
@@ -132,7 +134,6 @@ public abstract class ServoFeedbackMotor implements EffectorPeripheral<Double>, 
     protected void doWrite(double val) {
 
         synchronized (this) {
-            inner.resetSafety();
             this.currentGoal = val;
             this.isActivelySeeking = true;
         }

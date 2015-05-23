@@ -22,42 +22,39 @@
  * THE SOFTWARE.
  */
 
-package ftc.team6460.javadeck.api.peripheral;
+package ftc.team6460.javadeck.api.peripheral.util;
 
-import ftc.team6460.javadeck.api.motion.AntiStallFilter;
-import ftc.team6460.javadeck.api.motion.EncoderedMotor;
+import ftc.team6460.javadeck.api.peripheral.EffectorPeripheral;
+import ftc.team6460.javadeck.api.peripheral.PeripheralCommunicationException;
+import ftc.team6460.javadeck.api.peripheral.PeripheralInoperableException;
+import ftc.team6460.javadeck.api.peripheral.SensorPeripheral;
 import ftc.team6460.javadeck.api.safety.SafetyGroup;
 
 /**
- * Represents gearing on a drive motor.
+ * Converts the write-only EffectorPeripheral into a read-write peripheral that returns the last written value.
  */
-public class GearedDriveMotor extends EncoderedMotor {
-    private final double driveFactor, encoderFactor;
-
-    /**
-     * Creates a motor gearing
-     * @param driveFactor The output velocity for 1.0 power, in meters/sec.
-     * @param encoderFactor The number of encoder ticks per meter of movement.
-     * @param delegate The actual motor to use.
-     */
-    public GearedDriveMotor(double driveFactor, double encoderFactor, AntiStallFilter delegate) {
-        this.driveFactor = driveFactor;
-        this.encoderFactor = encoderFactor;
+public class ReadbackFilter<O,I extends O> implements EffectorPeripheral<I>, SensorPeripheral<O, Void> {
+    private final EffectorPeripheral<I> delegate;
+    private O val;
+    public ReadbackFilter(EffectorPeripheral<I> delegate) {
         this.delegate = delegate;
     }
 
-    private final AntiStallFilter delegate;
+    @Override
+    public void write(I input) throws InterruptedException, PeripheralCommunicationException, PeripheralInoperableException {
+        val = input;
+        delegate.write(input);
+    }
 
     @Override
-    public void doWrite(double val) throws InterruptedException, PeripheralCommunicationException, PeripheralInoperableException {
-
-        delegate.writeFast(val / driveFactor);
-
+    public void writeFast(I input) throws InterruptedException, PeripheralCommunicationException, PeripheralInoperableException {
+        delegate.writeFast(input);
     }
 
     @Override
     public void safetyShutdown(long nanos) throws InterruptedException, PeripheralCommunicationException, PeripheralInoperableException {
-        this.writeFast(0.0);
+        val = null;
+        delegate.safetyShutdown(nanos);
     }
 
     @Override
@@ -66,22 +63,22 @@ public class GearedDriveMotor extends EncoderedMotor {
     }
 
     @Override
-    public Double read(Void params) throws InterruptedException, PeripheralCommunicationException, PeripheralInoperableException {
-        return delegate.read(params) / encoderFactor;
+    public O read(Void params) throws InterruptedException, PeripheralCommunicationException, PeripheralInoperableException {
+        return val;
     }
 
     @Override
-    public void calibrate(Double val, Void params) throws InterruptedException, UnsupportedOperationException, PeripheralInoperableException, PeripheralCommunicationException {
-        delegate.calibrate(val * encoderFactor, params);
+    public void calibrate(O val, Void params) throws InterruptedException, UnsupportedOperationException, PeripheralInoperableException, PeripheralCommunicationException {
+        throw new UnsupportedOperationException("Cannot calibrate a readback filter");
     }
 
     @Override
-    public boolean checkSafety() {
-        return delegate.checkSafety();
+    public void loop() {
+        // do not delegate
     }
 
     @Override
     public void setup() {
-
+// do not delegate
     }
 }

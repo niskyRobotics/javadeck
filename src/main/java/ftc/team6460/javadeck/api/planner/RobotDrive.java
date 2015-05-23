@@ -26,11 +26,12 @@ package ftc.team6460.javadeck.api.planner;
 
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Interface allowing physical robot to be moved to a new position. Thread-safety is not required.
  */
-public abstract class RobotDrive implements Sensor {
+public abstract class RobotDrive implements Sensor, PositionIntegrator {
     @Override
     public double getLikelihood(double x, double y) {
         return calculate2DGaussian(x - currentPosition.getX(),
@@ -148,5 +149,10 @@ public abstract class RobotDrive implements Sensor {
         collectedAngularDrift += calculateAngularDrift(travel);
         collectedDrift += calculateDrift(travel);
         this.currentPosition = travel.apply(currentPosition).materialize();
+    }
+
+    @Override
+    public List<LocationCandidate> getCandidates(double minCorr) {
+        return Collections.singletonList(new LocationCandidate(this.currentPosition.materialize(), 1.00));
     }
 }
