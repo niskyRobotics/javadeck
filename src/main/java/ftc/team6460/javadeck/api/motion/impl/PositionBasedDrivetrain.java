@@ -34,6 +34,10 @@ import ftc.team6460.javadeck.api.planner.*;
  * Represents a drivetrain controlled by relative movements. Note: If an instance of HolonomicDrivetrain is passed, then this class will perform optimizations.
  */
 public class PositionBasedDrivetrain extends RobotDrive {
+
+    private static final double ASSERTION_ALLOWED_ERROR = 0.001;
+    private static final int MSEC_PER_CONTROL_ITER = 25;
+
     public PositionBasedDrivetrain(RobotPosition currentPosition, VelocityDrivetrain vd, double robotWidth, double accel, double maxSpeed) {
         super(currentPosition);
         this.vd = vd;
@@ -104,7 +108,7 @@ public class PositionBasedDrivetrain extends RobotDrive {
             assert (holdTime >= 0) : "holding speed for negative time";
             double spdSignum = Math.signum(circumDistance);
             // 1/2 a t^2, but twice due to decel time as well
-            assert (Math.abs(circumDistance - (accel * accelTime * accelTime + holdTime * maxSpeed)) < 0.001);
+            assert (Math.abs(circumDistance - (accel * accelTime * accelTime + holdTime * maxSpeed)) < ASSERTION_ALLOWED_ERROR);
             assert (accelTime * accel <= maxSpeed);
 
 
@@ -119,12 +123,14 @@ public class PositionBasedDrivetrain extends RobotDrive {
                     millisNow = System.currentTimeMillis() - tStart;
                     vd.spinInPlace(spd * spdSignum);
                     // hardware writes occur every 50msec
-                    Thread.sleep(25);
+                    Thread.sleep(MSEC_PER_CONTROL_ITER);
                 }
 
                 while (millisNow < (accelTime + holdTime)) {
                     spd = maxSpeed;
                     vd.spinInPlace(spd * spdSignum);
+                    millisNow = System.currentTimeMillis() - tStart;
+                    Thread.sleep(MSEC_PER_CONTROL_ITER);
                 }
                 while (millisNow < (2 * accelTime + holdTime)) {
                     spd = (2 * accelTime + holdTime - millisNow) * accel;
@@ -133,7 +139,7 @@ public class PositionBasedDrivetrain extends RobotDrive {
                     millisNow = System.currentTimeMillis() - tStart;
                     vd.spinInPlace(spd * spdSignum);
                     // hardware writes occur every 50msec
-                    Thread.sleep(25);
+                    Thread.sleep(MSEC_PER_CONTROL_ITER);
                 }
                 vd.stopAll();
 
@@ -150,7 +156,7 @@ public class PositionBasedDrivetrain extends RobotDrive {
         assert (holdTime >= 0) : "holding speed for negative time";
 
         // 1/2 a t^2, but twice due to decel time as well
-        assert (Math.abs(distance - (accel * accelTime * accelTime + holdTime * maxSpeed)) < 0.001);
+        assert (Math.abs(distance - (accel * accelTime * accelTime + holdTime * maxSpeed)) < ASSERTION_ALLOWED_ERROR);
         assert (accelTime * accel <= maxSpeed);
 
 
@@ -165,12 +171,13 @@ public class PositionBasedDrivetrain extends RobotDrive {
                 millisNow = System.currentTimeMillis() - tStart;
                 vd.setVelocity(spd);
                 // hardware writes occur every 50msec
-                Thread.sleep(25);
+                Thread.sleep(MSEC_PER_CONTROL_ITER);
             }
 
             while (millisNow < (accelTime + holdTime)) {
                 spd = maxSpeed;
                 vd.setVelocity(spd);
+                Thread.sleep(MSEC_PER_CONTROL_ITER);
             }
             while (millisNow < (2 * accelTime + holdTime)) {
                 spd = (2 * accelTime + holdTime - millisNow) * accel;
@@ -179,7 +186,7 @@ public class PositionBasedDrivetrain extends RobotDrive {
                 millisNow = System.currentTimeMillis() - tStart;
                 vd.setVelocity(spd);
                 // hardware writes occur every 50msec
-                Thread.sleep(25);
+                Thread.sleep(MSEC_PER_CONTROL_ITER);
             }
             vd.stopAll();
 
@@ -189,6 +196,7 @@ public class PositionBasedDrivetrain extends RobotDrive {
         }
     }
 
+    @SuppressWarnings("CastToConcreteClass")
     private void doHolonomicOptimizedMove(RelativePosition travel) throws RobotHardwareException {
         // holonomic optimization
         // negative due to choice of orientation
@@ -200,7 +208,7 @@ public class PositionBasedDrivetrain extends RobotDrive {
         assert (holdTime >= 0) : "holding speed for negative time";
 
         // 1/2 a t^2, but twice due to decel time as well
-        assert (Math.abs(distance - (accel * accelTime * accelTime + holdTime * maxSpeed)) < 0.001);
+        assert (Math.abs(distance - (accel * accelTime * accelTime + holdTime * maxSpeed)) < ASSERTION_ALLOWED_ERROR);
         assert (accelTime * accel <= maxSpeed);
 
 
@@ -215,12 +223,14 @@ public class PositionBasedDrivetrain extends RobotDrive {
                 millisNow = System.currentTimeMillis() - tStart;
                 ((HolonomicDrivetrain) vd).set2DVelocity(spd * Math.cos(holonomicAngleOffset), spd * Math.sin(holonomicAngleOffset));
                 // hardware writes occur every 50msec
-                Thread.sleep(25);
+                Thread.sleep(MSEC_PER_CONTROL_ITER);
             }
 
             while (millisNow < (accelTime + holdTime)) {
                 spd = maxSpeed;
                 ((HolonomicDrivetrain) vd).set2DVelocity(spd * Math.cos(holonomicAngleOffset), spd * Math.sin(holonomicAngleOffset));
+
+                Thread.sleep(MSEC_PER_CONTROL_ITER);
             }
             while (millisNow < (2 * accelTime + holdTime)) {
                 spd = (2 * accelTime + holdTime - millisNow) * accel;
@@ -229,7 +239,7 @@ public class PositionBasedDrivetrain extends RobotDrive {
                 millisNow = System.currentTimeMillis() - tStart;
                 ((HolonomicDrivetrain) vd).set2DVelocity(spd * Math.cos(holonomicAngleOffset), spd * Math.sin(holonomicAngleOffset));
                 // hardware writes occur every 50msec
-                Thread.sleep(25);
+                Thread.sleep(MSEC_PER_CONTROL_ITER);
             }
             vd.stopAll();
         } catch (InterruptedException | PeripheralInoperableException | PeripheralCommunicationException e) {

@@ -34,7 +34,6 @@ import java.util.*;
  * Created by hexafraction on 4/11/15.
  */
 public class Field {
-    private final long maxX, maxY;
     private final Set<Zone> zones = new HashSet<>();
     private final Set<Waypoint> waypoints = new HashSet<>();
 
@@ -47,11 +46,9 @@ public class Field {
      * such that a value of 1 describes an offset of 1mm.
      */
     public Field(long maxX, long maxY, Zone... zones) {
-        this.maxX = maxX;
-        this.maxY = maxY;
-        for (Zone z : zones) {
-            this.zones.add(z);
-        }
+        long maxX1 = maxX;
+        long maxY1 = maxY;
+        Collections.addAll(this.zones, zones);
     }
 
     public void addWaypoint(Waypoint waypoint) throws DuplicateWaypointException, ObstacleException {
@@ -90,19 +87,13 @@ public class Field {
         // tradeoff: decrease priority is not well implemented in the Java API, so we'll just do it in O(V) instead, manually.
         // This should only happen rarely.
         for (Waypoint w : waypoints) {
-            w.tag = w.new Tag();
+            w.tag = new Waypoint.Tag();
         }
-        PriorityQueue<Waypoint> queue = new PriorityQueue<Waypoint>(10, new Comparator<Waypoint>() {
-            @Override
-            public int compare(Waypoint w1, Waypoint w2) {
-                return Double.compare(w1.tag.dist, w2.tag.dist);
-            }
-        });
+        PriorityQueue<Waypoint> queue = new PriorityQueue<Waypoint>(10, new WaypointComparator());
         // we'll do a backwards search so we can extract the path in forward order relative to parameters start and end.
-        Waypoint src = end;
-        src.tag.dist = 0;
-        src.tag.inQueue = true;
-        queue.add(src);
+        end.tag.dist = 0;
+        end.tag.inQueue = true;
+        queue.add(end);
 
         while (!queue.isEmpty()) {
             Waypoint u = queue.poll();
@@ -122,16 +113,20 @@ public class Field {
                 }
 
             }
-            if (u == start) break;
+            if (u == start) {
+                break;
+            }
         }
 
-        ArrayList<Waypoint> path = new ArrayList<>();
+        AbstractList<Waypoint> path = new ArrayList<>();
         Waypoint t = start;
         //System.out.println("t = " + t);
         do {
             path.add(t);
             t = t.tag.prev;
-            if(t==null) throw new ObstacleException("No path found.");
+            if(t==null) {
+                throw new ObstacleException("No path found.");
+            }
         } while (t != end);
         path.add(end);
         return path;
@@ -148,11 +143,15 @@ public class Field {
     }
 
     public void addConnection(Waypoint w1, Waypoint w2) throws ObstacleException {
-        if (w1.equals(w2)) throw new IllegalArgumentException("connection to self");
+        if (w1.equals(w2)) {
+            throw new IllegalArgumentException("connection to self");
+        }
         Segment s = new Segment(w1.getPos(), w2.getPos());
         for (Zone z : zones) {
             if (z.mode == ZoneMode.ZONE_OBSTACLE || z.mode == ZoneMode.ZONE_ILLEGAL) {
-                if (z.intersects(s)) throw new ObstacleException("Connection crosses an obstacle or illegal zone");
+                if (z.intersects(s)) {
+                    throw new ObstacleException("Connection crosses an obstacle or illegal zone");
+                }
             }
         }
         w1.addNeighbor(w2);
@@ -186,15 +185,22 @@ public class Field {
         ZONE_COMMON, ZONE_ALLIANCE, ZONE_PERSONAL, ZONE_ILLEGAL, ZONE_OBSTACLE
     }
 
+    private static class WaypointComparator implements Comparator<Waypoint> {
+        @Override
+        public int compare(Waypoint w1, Waypoint w2) {
+            return Double.compare(w1.tag.dist, w2.tag.dist);
+        }
+    }
+
     /**
      * Describes a polygonal area of the game field, along with metadata describing its role during gameplay.
      */
-    public class Zone {
+    public static class Zone {
 
 
         private final ZoneMode mode;
 
-        private final TreeSet<Point2D> waypoints = new TreeSet<>(new Comparator<Point2D>() {
+        private final Set<Point2D> waypoints = new TreeSet<>(new Comparator<Point2D>() {
             @Override
             public int compare(Point2D o1, Point2D o2) {
                 int xCompRes = Long.compare(o1.getX(), o2.getX());
@@ -214,10 +220,11 @@ public class Field {
             this.mode = mode;
             this.vertices = vertices.clone();
             // check unique vertices:
-            HashSet<Point2D> vertexSet = new HashSet<>();
+            Set<Point2D> vertexSet = new HashSet<>();
             for (Point2D vtx : vertices) {
-                if (!vertexSet.add(vtx))
+                if (!vertexSet.add(vtx)) {
                     throw new DegeneratePolygonException("Vertices are not unique: " + vtx.toString());
+                }
             }
         }
 
@@ -235,8 +242,9 @@ public class Field {
 
         public boolean intersects(Segment s) {
             for (int i = 0; i < vertices.length; i++) {
-                if (GeometryUtils.intersect2D(s, new Segment(vertices[i], vertices[(i + 1) % vertices.length])) != 0)
+                if (GeometryUtils.intersect2D(s, new Segment(vertices[i], vertices[(i + 1) % vertices.length])) != 0) {
                     return true;
+                }
             }
             return false;
         }

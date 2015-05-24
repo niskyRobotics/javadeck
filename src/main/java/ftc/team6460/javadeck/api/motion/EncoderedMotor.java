@@ -31,11 +31,11 @@ import ftc.team6460.javadeck.api.safety.SafetyGroup;
 import ftc.team6460.javadeck.api.safety.SafetyPeripheral;
 
 /**
- * Created by akh06977 on 2015.21.05.
+ *
  */
-public abstract class EncoderedMotor extends UnencoderedMotor implements SensorPeripheral<Double, Void>, SafetyPeripheral {
+public interface EncoderedMotor extends UnencoderedMotor, SensorPeripheral<Double, Void>, SafetyPeripheral {
 
-    protected volatile SafetyGroup safetyGroup;
+
 
 
     /**
@@ -49,9 +49,7 @@ public abstract class EncoderedMotor extends UnencoderedMotor implements SensorP
      * @throws PeripheralInoperableException    If the motor is inoperable.
      */
     @Override
-    public void write(Double input) throws InterruptedException, PeripheralCommunicationException, PeripheralInoperableException {
-        this.writeFast(input);
-    }
+    public void write(Double input) throws InterruptedException, PeripheralCommunicationException, PeripheralInoperableException;
 
     /**
      * Sets the speed of the motor to the new value.
@@ -65,14 +63,7 @@ public abstract class EncoderedMotor extends UnencoderedMotor implements SensorP
      * @throws PeripheralInoperableException    If the effector is inoperable.
      */
     @Override
-    public void writeFast(Double input) throws InterruptedException, PeripheralCommunicationException, PeripheralInoperableException {
-        synchronized (this) {
-            this.currentVelocity = input;
-            this.doWrite(input);
-        }
-    }
-
-    protected double currentVelocity;
+    public void writeFast(Double input) throws InterruptedException, PeripheralCommunicationException, PeripheralInoperableException;
 
 
     /**
@@ -80,20 +71,9 @@ public abstract class EncoderedMotor extends UnencoderedMotor implements SensorP
      *
      * @param val The value to write
      */
-    protected abstract void doWrite(double val)  throws InterruptedException, PeripheralCommunicationException, PeripheralInoperableException;
+    abstract void doWrite(double val)  throws InterruptedException, PeripheralCommunicationException, PeripheralInoperableException;
 
-    /**
-     * Resets the encoder to zero. This method should not be called after a time less
-     *
-     * @throws InterruptedException             If interrupted.
-     * @throws PeripheralCommunicationException If communication failed.
-     * @throws PeripheralInoperableException    If encoder inoperable.
-     */
-    public void resetEncoder() throws InterruptedException, PeripheralCommunicationException, PeripheralInoperableException {
-        synchronized (this) {
-            this.calibrate(0.0, null);
-        }
-    }
+
 
 
 

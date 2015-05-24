@@ -33,9 +33,10 @@ import ftc.team6460.javadeck.api.safety.SafetyGroup;
 /**
  * Converts the write-only EffectorPeripheral into a read-write peripheral that returns the last written value.
  */
-public class ReadbackFilter<O,I extends O> implements EffectorPeripheral<I>, SensorPeripheral<O, Void> {
+public class ReadbackFilter<O, I extends O> implements EffectorPeripheral<I>, SensorPeripheral<O, Void> {
     private final EffectorPeripheral<I> delegate;
     private O val;
+
     public ReadbackFilter(EffectorPeripheral<I> delegate) {
         this.delegate = delegate;
     }
@@ -62,8 +63,13 @@ public class ReadbackFilter<O,I extends O> implements EffectorPeripheral<I>, Sen
         delegate.addSafetyGroup(grp);
     }
 
+    /**
+     * Returns the last written value, or <code>null</code> if the value cannot be determined or has been invalidated.
+     *
+     * @param params Ignored.
+     */
     @Override
-    public O read(Void params) throws InterruptedException, PeripheralCommunicationException, PeripheralInoperableException {
+    public O read(Void params) {
         return val;
     }
 

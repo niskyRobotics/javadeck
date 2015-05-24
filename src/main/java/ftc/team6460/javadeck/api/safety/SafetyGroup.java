@@ -24,6 +24,7 @@
 
 package ftc.team6460.javadeck.api.safety;
 
+import ftc.team6460.javadeck.api.Maintainable;
 import ftc.team6460.javadeck.api.peripheral.EffectorPeripheral;
 import ftc.team6460.javadeck.api.peripheral.PeripheralCommunicationException;
 import ftc.team6460.javadeck.api.peripheral.PeripheralInoperableException;
@@ -37,36 +38,17 @@ import java.util.concurrent.ConcurrentSkipListSet;
  * <p/>
  * Safety shutdowns remain in place for as long as the timeout specified.
  */
-public class SafetyGroup implements EffectorPeripheral<Void> {
+public class SafetyGroup implements Maintainable {
     private final Callable<Void> onFaultCallable;
     private final SafetyShutdownFailureAction failureAction;
     private final long nanosForShutdown;
 
-    @Override
-    public void write(Void input) throws InterruptedException, PeripheralCommunicationException, PeripheralInoperableException {
-        throw new UnsupportedOperationException("Cannot write directly to a safety group");
-    }
-
-    @Override
-    public void writeFast(Void input) throws InterruptedException, PeripheralCommunicationException, PeripheralInoperableException {
-        throw new UnsupportedOperationException("Cannot write directly to a safety group");
-    }
-
-    @Override
-    public void safetyShutdown(long nanos) throws InterruptedException, PeripheralCommunicationException, PeripheralInoperableException {
-        safetyShutdown0(nanos);
-    }
-
-    @Override
-    public void addSafetyGroup(SafetyGroup grp) {
-        throw new UnsupportedOperationException("Nested safety groups are not permitted.");
-    }
 
     @Override
     public void loop() {
         for (SafetyPeripheral sens : sensors) {
             if (!sens.checkSafety()) {
-                safetyShutdown0(this.nanosForShutdown);
+                safetyShutdown(this.nanosForShutdown);
                 return;
             }
         }
@@ -109,14 +91,15 @@ public class SafetyGroup implements EffectorPeripheral<Void> {
      */
     public void registerEffector(EffectorPeripheral<?> eff) {
         this.members.add(eff);
-        if (eff instanceof SafetyPeripheral)
+        if (eff instanceof SafetyPeripheral) {
             this.addSafetySensor((SafetyPeripheral) eff);
+        }
     }
 
     /**
      * Call to signal a safety fault. All effectors in this group are immediately put to a safe state.
      */
-    protected void safetyShutdown0(long nanos) {
+    public void safetyShutdown(long nanos) {
 
         for (EffectorPeripheral<?> eff : members) {
             try {

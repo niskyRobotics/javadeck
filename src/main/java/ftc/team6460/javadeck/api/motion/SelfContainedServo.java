@@ -61,11 +61,5 @@ public abstract class SelfContainedServo implements EffectorPeripheral<SlewedDou
     @Override
     public abstract void writeFast(SlewedDouble input) throws InterruptedException, PeripheralCommunicationException, PeripheralInoperableException;
 
-    /**
-     * Called each event loop.
-     */
-    @Override
-    public void loop() {
-        // no operation
-    }
+
 }

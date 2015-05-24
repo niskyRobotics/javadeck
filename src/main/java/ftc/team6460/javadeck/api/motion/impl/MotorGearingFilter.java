@@ -32,14 +32,15 @@ import ftc.team6460.javadeck.api.safety.SafetyGroup;
 /**
  * Represents gearing on a drive motor.
  */
-public class MotorGearingFilter extends EncoderedMotor {
+public class MotorGearingFilter implements EncoderedMotor {
     private final double driveFactor, encoderFactor;
 
     /**
      * Creates a motor gearing
-     * @param driveFactor The output velocity for 1.0 power, in meters/sec.
+     *
+     * @param driveFactor   The output velocity for 1.0 power, in meters/sec.
      * @param encoderFactor The number of encoder ticks per meter of movement.
-     * @param delegate The actual motor to use.
+     * @param delegate      The actual motor to use.
      */
     public MotorGearingFilter(double driveFactor, double encoderFactor, AntiStallFilter delegate) {
         this.driveFactor = driveFactor;
@@ -50,10 +51,23 @@ public class MotorGearingFilter extends EncoderedMotor {
     private final AntiStallFilter delegate;
 
     @Override
+    public void write(Double input) throws InterruptedException, PeripheralCommunicationException, PeripheralInoperableException {
+        delegate.write(input / driveFactor);
+    }
+
+    @Override
+    public void writeFast(Double input) throws InterruptedException, PeripheralCommunicationException, PeripheralInoperableException {
+        delegate.writeFast(input / driveFactor);
+    }
+
+    @Override
+    public void loop() {
+        delegate.loop();
+    }
+
+    @Override
     public void doWrite(double val) throws InterruptedException, PeripheralCommunicationException, PeripheralInoperableException {
-
         delegate.writeFast(val / driveFactor);
-
     }
 
     @Override

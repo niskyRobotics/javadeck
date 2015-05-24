@@ -32,8 +32,11 @@ public class SlewedDouble {
     private final double slewRate;
 
     public double interpolate(double start, double time) {
-        if (Math.abs(time * slewRate) > Math.abs(value - start)) return value;
-        else return start + Math.signum(value - start) * slewRate * time;
+        if (Math.abs(time * slewRate) > Math.abs(value - start)) {
+            return value;
+        } else {
+            return start + Math.signum(value - start) * slewRate * time;
+        }
     }
 
     @Override

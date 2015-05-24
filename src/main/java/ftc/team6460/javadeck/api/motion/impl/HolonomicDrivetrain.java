@@ -46,7 +46,7 @@ public class HolonomicDrivetrain implements VelocityDrivetrain {
         this.speedFactor = speedFactor;
     }
 
-    public static final double SQRT_2 = Math.sqrt(2);
+    public static final double SQRT_2 = 1.4142135623730951;
 
     /**
      * Raw speed to motor needed to reach 1 meter/sec.

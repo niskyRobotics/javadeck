@@ -36,7 +36,7 @@ import ftc.team6460.javadeck.api.safety.SafetyGroup;
  */
 
 // TODO refactor heck out of this class
-public abstract class AntiStallFilter extends EncoderedMotor {
+public abstract class AntiStallFilter implements EncoderedMotor {
 
     protected volatile SafetyGroup safetyGroup;
     private final EncoderedMotor delegate;
@@ -116,7 +116,6 @@ public abstract class AntiStallFilter extends EncoderedMotor {
      * @param encoderDirection   +1 if a positive power will cause the encoder reading to increase, -1 otherwise.
      */
     public AntiStallFilter(EncoderedMotor mtr, SafetyGroup safetyGroup, double antiStallThreshold, double antiStallTimeout, double maxStallPower, int encoderDirection) {
-
         this.safetyGroup = safetyGroup;
         this.delegate = mtr;
         this.antiStallThreshold = antiStallThreshold;
@@ -163,7 +162,9 @@ public abstract class AntiStallFilter extends EncoderedMotor {
 
     @Override
     public boolean checkSafety() {
-        if (this.antiStallThreshold == 0) return true;
+        if (this.antiStallThreshold == 0) {
+            return true;
+        }
         if (this.earliestReactivation > System.nanoTime()) {
             try {
                 encoderLastPosition = this.read(null);
@@ -176,7 +177,9 @@ public abstract class AntiStallFilter extends EncoderedMotor {
 
         synchronized (this) {
 
-            if (this.currentVelocity < maxStallPower) return true;
+            if (this.currentVelocity < maxStallPower) {
+                return true;
+            }
             if (System.nanoTime() - encoderLastTime < antiStallTimeout) {
                 return true;
             }
@@ -209,11 +212,13 @@ public abstract class AntiStallFilter extends EncoderedMotor {
      */
     @Override
     public void loop() {
-        if (!this.checkSafety()) try {
-            safetyGroup.safetyShutdown(1_000_000_000); // default
-            this.writeFast(0.0);
-        } catch (Throwable e) {
-            e.printStackTrace();
+        if (!this.checkSafety()) {
+            try {
+                safetyGroup.safetyShutdown(1_000_000_000); // default
+                this.writeFast(0.0);
+            } catch (Throwable e) {
+                //e.printStackTrace();
+            }
         }
     }
 

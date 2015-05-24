@@ -177,7 +177,7 @@ public class WeightedAveragePositionIntegrator implements PositionIntegrator {
     }
 
     // actually checks if this max is at least correlatorMinSNR the surrounding average
-    @SuppressWarnings("RedundantIfStatement")
+    @SuppressWarnings({"RedundantIfStatement", "ControlFlowStatementWithoutBraces"})
     private boolean checkRelMax(int x, int y) {
         double max = tiles[x][y].getMax();
         if (max < (correlatorMinSNR * getSafeAvg(x + 1, y - 1)) && max < islandMinAbsolute) return false;
@@ -291,8 +291,7 @@ public class WeightedAveragePositionIntegrator implements PositionIntegrator {
 
         //memoize? Fast!
         public double getAvg() {
-            if (!hasFine) return coarse;
-            else {
+            if (hasFine) {
                 double sum = 0;
                 for (int x = -FINE_STEPS_IN_EACH_DIRECTION; x <= FINE_STEPS_IN_EACH_DIRECTION; x++) {
                     for (int y = -FINE_STEPS_IN_EACH_DIRECTION; y <= FINE_STEPS_IN_EACH_DIRECTION; y++) {
@@ -300,7 +299,7 @@ public class WeightedAveragePositionIntegrator implements PositionIntegrator {
                     }
                 }
                 return sum / (FINE_STEP_SUBDIVISIONS * FINE_STEP_SUBDIVISIONS);
-            }
+            } else return coarse;
         }
 
         public void zero() {
@@ -316,8 +315,7 @@ public class WeightedAveragePositionIntegrator implements PositionIntegrator {
 
         //memoize? Fast!
         public double getMax() {
-            if (!hasFine) return coarse;
-            else {
+            if (hasFine) {
                 double max = 0;
                 for (int x = -FINE_STEPS_IN_EACH_DIRECTION; x <= FINE_STEPS_IN_EACH_DIRECTION; x++) {
                     for (int y = -FINE_STEPS_IN_EACH_DIRECTION; y <= FINE_STEPS_IN_EACH_DIRECTION; y++) {
@@ -325,13 +323,12 @@ public class WeightedAveragePositionIntegrator implements PositionIntegrator {
                     }
                 }
                 return max;
-            }
+            } else return coarse;
         }
 
         //memoize? Fast!
         public IntPair getMaxPos() {
-            if (!hasFine) return COARSE_POSITION;
-            else {
+            if (hasFine) {
                 int xPos = 0;
                 int yPos = 0;
                 double max = 0;
@@ -347,7 +344,7 @@ public class WeightedAveragePositionIntegrator implements PositionIntegrator {
                 }
                 //System.out.println("Returning "+xPos+","+yPos);
                 return new IntPair(xPos, yPos);
-            }
+            } else return COARSE_POSITION;
         }
 
 

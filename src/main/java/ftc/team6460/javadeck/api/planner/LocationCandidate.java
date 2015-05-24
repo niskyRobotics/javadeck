@@ -52,4 +52,10 @@ public class LocationCandidate {
         this.position = position;
         this.correlationStrength = correlationStrength;
     }
+    public static class Comparator implements java.util.Comparator<LocationCandidate> {
+        @Override
+        public int compare(LocationCandidate o1, LocationCandidate o2) {
+            return Double.compare(o1.getCorrelationStrength(), o2.getCorrelationStrength());
+        }
+    }
 }

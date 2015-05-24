@@ -48,7 +48,10 @@ public interface SafetyPeripheral extends RobotPeripheral {
         public boolean checkSafety(T val);
     }
 
-    public class Factory {
+    public final class Factory {
+        private Factory() {
+        }
+
         public static <T> SafetyPeripheral fromSensor(final SensorPeripheral<T, ?> sensor, final SafetyChecker<T> lambda) {
             return new LambdaSafetyPeripheral<>(lambda, sensor);
         }

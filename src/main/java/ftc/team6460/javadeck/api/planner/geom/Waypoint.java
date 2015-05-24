@@ -29,17 +29,19 @@ import java.util.*;
 /**
  * Created by hexafraction on 4/11/15.
  */
-public class Waypoint {
+public final class Waypoint {
     private final Set<Field.Zone> zones = new HashSet<>();
 
     private Waypoint(Point2D pos) {
         this.pos = pos;
     }
 
-    private static final HashMap<Point2D, Waypoint> cache = new HashMap<>();
-    public static Waypoint fromPos(Point2D pos){
-        if(cache.containsKey(pos)) return cache.get(pos);
-        else {
+    private static final AbstractMap<Point2D, Waypoint> cache = new HashMap<>();
+
+    public static Waypoint fromPos(Point2D pos) {
+        if (cache.containsKey(pos)) {
+            return cache.get(pos);
+        } else {
             Waypoint wp = new Waypoint(pos);
             cache.put(pos, wp);
             return wp;
@@ -69,8 +71,10 @@ public class Waypoint {
         this.neighbors.remove(w);
     }
 
-    public class Tag{
-        double dist = Double.POSITIVE_INFINITY; Waypoint prev; boolean inQueue = false;
+    public static class Tag {
+        double dist = Double.POSITIVE_INFINITY;
+        Waypoint prev;
+        boolean inQueue = false;
 
         @Override
         public String toString() {
@@ -90,16 +94,19 @@ public class Waypoint {
         return Collections.unmodifiableSet(zones);
     }
 
-    void addZone(Field.Zone z) throws IllegalArgumentException{
-        if(z.contains(this.getPos())) zones.add(z);
-        else throw new IllegalArgumentException("Waypoint not in zone");
+    void addZone(Field.Zone z) throws IllegalArgumentException {
+        if (z.contains(pos)) {
+            zones.add(z);
+        } else {
+            throw new IllegalArgumentException("Waypoint not in zone");
+        }
     }
 
 
     private final Point2D pos;
     private final Set<Waypoint> neighbors = new HashSet<>();
 
-    public double distanceTo(Waypoint w){
+    public double distanceTo(Waypoint w) {
         return GeometryUtils.euclideanDistance(w.pos, this.pos);
     }
 
@@ -112,7 +119,7 @@ public class Waypoint {
                 '}';
     }
 
-    void addNeighbor(Waypoint w){
+    void addNeighbor(Waypoint w) {
         this.neighbors.add(w);
     }
 

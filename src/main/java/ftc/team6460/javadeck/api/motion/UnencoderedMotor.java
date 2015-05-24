@@ -31,7 +31,7 @@ import ftc.team6460.javadeck.api.peripheral.PeripheralInoperableException;
 /**
  * Represents a motor without an encoder, or with an encoder whose values are to be disregarded. Subclasses must be thread-safe.
  */
-public abstract class UnencoderedMotor implements EffectorPeripheral<Double> {
+public interface UnencoderedMotor extends EffectorPeripheral<Double> {
     /**
      * Sets the motor speed to the new value. This method should be overridden if it is possible to determine when the motor has spun up to its target speed.
      * The input may specify the speed in an implementation-dependent unit, but a given robot platform should implement this so that all motors of the same type will
@@ -44,9 +44,7 @@ public abstract class UnencoderedMotor implements EffectorPeripheral<Double> {
      * @throws ftc.team6460.javadeck.api.peripheral.PeripheralInoperableException    If the motor is inoperable.
      */
     @Override
-    public void write(Double input) throws InterruptedException, PeripheralCommunicationException, PeripheralInoperableException {
-        this.writeFast(input);
-    }
+    public void write(Double input) throws InterruptedException, PeripheralCommunicationException, PeripheralInoperableException;
 
     /**
      * Sets the speed of the motor to the new value.
@@ -65,7 +63,5 @@ public abstract class UnencoderedMotor implements EffectorPeripheral<Double> {
      * Called each event loop.
      */
     @Override
-    public void loop() {
-        // no operation
-    }
+    public void loop();
 }

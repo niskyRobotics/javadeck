@@ -33,6 +33,7 @@ import ftc.team6460.javadeck.api.planner.RobotPosition;
  */
 public class Point2D {
 
+    private static final double MILLIMETERS_IN_METER = 1000.0;
     private final ImmutableRobotPosition cachedPos;
 
     public ImmutableRobotPosition getAsRobotPos() {
@@ -40,8 +41,9 @@ public class Point2D {
     }
 
     public ImmutableRobotPosition getAsRobotPos(double theta) {
-        return new ImmutableRobotPosition(x / 1000.0, y / 1000.0, theta);
+        return new ImmutableRobotPosition(x / MILLIMETERS_IN_METER, y / MILLIMETERS_IN_METER, theta);
     }
+
     @Override
     public String toString() {
         return "Point2D{" +
@@ -71,7 +73,7 @@ public class Point2D {
     }
 
     public static Point2D fromRobotPosition(RobotPosition rPos) {
-        return new Point2D(Math.round(rPos.getX() * 1000), Math.round(rPos.getY() * 1000));
+        return new Point2D(Math.round(rPos.getX() * MILLIMETERS_IN_METER), Math.round(rPos.getY() * MILLIMETERS_IN_METER));
     }
 
     public long getX() {
@@ -87,7 +89,7 @@ public class Point2D {
 
         this.x = x;
         this.y = y;
-        cachedPos = new ImmutableRobotPosition(x / 1000.0, y / 1000.0, 0);
+        cachedPos = new ImmutableRobotPosition(x / MILLIMETERS_IN_METER, y / MILLIMETERS_IN_METER, 0);
     }
 
     final long x;

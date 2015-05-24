@@ -25,7 +25,6 @@
 package ftc.team6460.javadeck.api.planner;
 
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -42,6 +41,7 @@ public abstract class RobotDrive implements Sensor, PositionIntegrator {
     public double getOrientationLikelihood(double x, double y, double theta) {
         return calculate1DGaussian(Math.IEEEremainder((theta - currentPosition.getTheta()), 2 * Math.PI));
     }
+
 
     // calculates a gaussian in 3d around the center
     private double calculate2DGaussian(double deltaX, double deltaY) {
@@ -103,6 +103,11 @@ public abstract class RobotDrive implements Sensor, PositionIntegrator {
     }
 
     protected double collectedDrift = 0;
+
+    public RobotPosition getCurrentPosition() {
+        return this.currentPosition.materialize();
+    }
+
     protected double collectedAngularDrift = 0;
 
     /**

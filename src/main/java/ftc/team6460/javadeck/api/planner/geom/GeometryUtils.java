@@ -13,9 +13,12 @@ package ftc.team6460.javadeck.api.planner.geom;
 /**
  * Created by hexafraction on 4/11/15.
  */
-public class GeometryUtils {
+public final class GeometryUtils {
 
     private static final double SMALL_NUM = 0.00000001;
+
+    private GeometryUtils() {
+    }
 
     /**
      * @param p0 Point defining line
@@ -92,12 +95,12 @@ public class GeometryUtils {
             // they are collinear segments - get  overlap (or not)
             float t0, t1;                    // endpoints of s1 in eqn for s2
             Point2D w2 = new Point2D(s1.p1.x - s2.p0.x, s1.p1.y - s2.p0.y);
-            if (v.x != 0) {
-                t0 = w.x / v.x;
-                t1 = w2.x / v.x;
-            } else {
+            if (v.x == 0) {
                 t0 = w.y / v.y;
                 t1 = w2.y / v.y;
+            } else {
+                t0 = w.x / v.x;
+                t1 = w2.x / v.x;
             }
             if (t0 > t1) {                   // must have t0 smaller than t1
                 float t = t0;
@@ -145,15 +148,15 @@ public class GeometryUtils {
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean inSegment(Point2D p, Segment s) {
-        if (s.p0.x != s.p1.x) {    // s is not  vertical
-            if (s.p0.x <= p.x && p.x <= s.p1.x)
-                return true;
-            if (s.p0.x >= p.x && p.x >= s.p1.x)
-                return true;
-        } else {    // s is vertical, so test y  coordinate
+        if (s.p0.x == s.p1.x) {    // s is vertical, so test y  coordinate
             if (s.p0.y <= p.y && p.y <= s.p1.y)
                 return true;
             if (s.p0.y >= p.y && p.y >= s.p1.y)
+                return true;
+        } else {    // s is not  vertical
+            if (s.p0.x <= p.x && p.x <= s.p1.x)
+                return true;
+            if (s.p0.x >= p.x && p.x >= s.p1.x)
                 return true;
         }
         return false;

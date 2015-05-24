@@ -66,34 +66,36 @@ public abstract class ServoFeedbackMotor implements EffectorPeripheral<Double>, 
     }
 
     @Override
-    public void setup() {
-        //noop
-    }
+    public abstract void setup();
 
     @Override
     public void loop() {
         synchronized (this) {
             inner.loop();
-            if (!isActivelySeeking) return;
-            try {
-                double currentPos = this.read(null);
-                double power = (currentGoal - currentPos) * correctionFactor;
-                if (Math.abs(currentGoal - currentPos) < maxErrorTolerance) {
-                    power = 0;
-                }
-                int newDirectionSignum = (int) Math.signum(power);
-                if (newDirectionSignum == -this.currentDirectionSignum || newDirectionSignum == 0) {
-                    if (!holdAtPosition) {
-                        this.isActivelySeeking = false;
+            if (isActivelySeeking) {
+                try {
+                    double currentPos = this.read(null);
+                    double power = (currentGoal - currentPos) * correctionFactor;
+                    if (Math.abs(currentGoal - currentPos) < maxErrorTolerance) {
                         power = 0;
                     }
-                }
-                power = Math.signum(power) * Math.max(Math.abs(maxPower), Math.abs(power));
-                currentDirectionSignum = (int) Math.signum(power);
-                inner.writeFast(power);
+                    int newDirectionSignum = (int) Math.signum(power);
+                    if (newDirectionSignum == -this.currentDirectionSignum || newDirectionSignum == 0) {
+                        if (holdAtPosition) {
+                        } else {
+                            this.isActivelySeeking = false;
+                            power = 0;
+                        }
+                    }
+                    power = Math.signum(power) * Math.max(Math.abs(maxPower), Math.abs(power));
+                    currentDirectionSignum = (int) Math.signum(power);
+                    inner.writeFast(power);
 
-            } catch (Exception e) {
-                // pass for now
+                } catch (Exception e) {
+                    // pass for now
+                }
+            } else {
+                return;
             }
         }
     }
@@ -142,7 +144,7 @@ public abstract class ServoFeedbackMotor implements EffectorPeripheral<Double>, 
     public void resetEncoder() throws
             InterruptedException, PeripheralCommunicationException, PeripheralInoperableException {
         synchronized (this) {
-            inner.resetEncoder();
+            inner.calibrate(0.0, null);
 
             this.isActivelySeeking = false;
         }

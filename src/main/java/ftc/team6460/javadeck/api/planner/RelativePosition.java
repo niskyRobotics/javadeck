@@ -71,33 +71,15 @@ public class RelativePosition {
      * @return An applied position, with the same freshness guarantees as the parameter init.
      */
     public RobotPosition apply(final RobotPosition init) {
-        return new RobotPosition() {
-            @Override
-            public double getX() {
-                return init.getX() + RelativePosition.this.distance * Math.cos(init.getTheta() - RelativePosition.this.theta);
-            }
-
-            @Override
-            public double getY() {
-                return init.getY() + RelativePosition.this.distance * Math.sin(init.getTheta() - RelativePosition.this.theta);
-            }
-
-            @Override
-            public double getTheta() {
-                return init.getTheta() - RelativePosition.this.theta;
-            }
-
-            @Override
-            public ImmutableRobotPosition materialize() {
-                return new ImmutableRobotPosition(this.getX(), this.getY(), this.getTheta());
-            }
-        };
+        return new ImmutableRobotPosition(init.getX() + RelativePosition.this.distance * Math.cos(init.getTheta() - RelativePosition.this.theta),
+                init.getY() + RelativePosition.this.distance * Math.sin(init.getTheta() - RelativePosition.this.theta),
+                init.getTheta() - RelativePosition.this.theta);
     }
 
     public static RelativePosition between(RobotPosition start, RobotPosition end) {
         double dist = Math.hypot(start.getX() - end.getX(), start.getY() - end.getY());
         double thetaRaw = Math.atan2(end.getY() - start.getY(), end.getX() - start.getX());
-        double thetaToTurn = Math.IEEEremainder(start.getTheta()-thetaRaw, 2 * Math.PI);
+        double thetaToTurn = Math.IEEEremainder(start.getTheta() - thetaRaw, 2 * Math.PI);
         return new RelativePosition(dist, thetaToTurn);
     }
 

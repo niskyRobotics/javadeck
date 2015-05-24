@@ -26,10 +26,7 @@ package ftc.team6460.javadeck.api.planner;
 
 import ftc.team6460.javadeck.api.planner.geom.Field;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 /**
  * Contains a planner for goals.
@@ -40,20 +37,23 @@ public class GoalPlanner<T> {
     private final RobotDrive drive;
     private final PositionIntegrator integrator;
     private final Field field;
+    private final double minCorr;
 
     /**
      * Creates a new goal planner
      *
      * @param initialState The robot's initial state
      * @param drive        The drivetrain to use in driving the robot to goals
-     * @param integrator    The position integrator to use.
+     * @param integrator   The position integrator to use.
      * @param f            A description of the field
+     * @param minCorr      The minimum sensor integrator correlation allowed.
      */
-    public GoalPlanner(T initialState, RobotDrive drive, PositionIntegrator integrator, Field f) {
+    public GoalPlanner(T initialState, RobotDrive drive, PositionIntegrator integrator, Field f, double minCorr) {
         this.currentState = initialState;
         this.drive = drive;
         this.integrator = integrator;
         this.field = f;
+        this.minCorr = minCorr;
     }
 
     /**
@@ -84,7 +84,9 @@ public class GoalPlanner<T> {
     }
 
     public synchronized void start() {
-        if (run) return;
+        if (run) {
+            return;
+        }
         run = true;
         new Thread(new PlannerRunnable(), "goalplanner-" + this.hashCode()).start();
     }
@@ -99,34 +101,30 @@ public class GoalPlanner<T> {
         public void run() {
             while (run) {
                 Goal<T> goal = GoalPlanner.this.getBestGoal();
-                List<LocationCandidate> bestMatches = GoalPlanner.this.integrator.getCandidates(0.9);
-                Collections.sort(bestMatches, new Comparator<LocationCandidate>() {
-                    @Override
-                    public int compare(LocationCandidate o1, LocationCandidate o2) {
-                        return Double.compare(o1.getCorrelationStrength(), o2.getCorrelationStrength());
-                    }
-                });
+                List<LocationCandidate> bestMatches = GoalPlanner.this.integrator.getCandidates(minCorr);
+                Collections.sort(bestMatches, new LocationCandidate.Comparator());
                 try {
                     List<RelativePosition> steps = GoalPlanner.this.field.findPath(bestMatches.get(bestMatches.size() - 1).getPosition(),
                             goal.getLocation());
                     for (RelativePosition rp : steps) {
                         drive.move(rp, false);
                     }
-                    List<LocationCandidate> bestMatchesAfter = GoalPlanner.this.integrator.getCandidates(0.9);
-                    Collections.sort(bestMatchesAfter, new Comparator<LocationCandidate>() {
-                        @Override
-                        public int compare(LocationCandidate o1, LocationCandidate o2) {
-                            return Double.compare(o1.getCorrelationStrength(), o2.getCorrelationStrength());
-                        }
-                    });
-                    goal.act(bestMatchesAfter.get(bestMatchesAfter.size() - 1).getPosition(), GoalPlanner.this.currentState, GoalPlanner.this);
+                    List<LocationCandidate> bestMatchesAfter;
+                    bestMatchesAfter = GoalPlanner.this.integrator.getCandidates(minCorr);
+                    Collections.sort(bestMatchesAfter, new LocationCandidate.Comparator());
+                    if (bestMatchesAfter.size() > 0)
+                        goal.act(bestMatchesAfter.get(bestMatchesAfter.size() - 1).getPosition(), GoalPlanner.this.currentState, GoalPlanner.this);
+                    else
+                        goal.act(drive.getCurrentPosition(), GoalPlanner.this.currentState, GoalPlanner.this);
                 } catch (ObstacleException e) {
                     GoalPlanner.this.removeGoal(goal);
                 } catch (RobotHardwareException e) {
-                    e.printStackTrace();
+                    //e.printStackTrace();
                 }
             }
         }
+
+
     }
 
     private volatile boolean run = true;
