@@ -45,7 +45,9 @@ public class Field {
      * The numeric values are fixed-point decimal, defined
      * such that a value of 1 describes an offset of 1mm.
      */
-    public Field(long maxX, long maxY, Zone... zones) {
+
+    public Field(/*what the heck?*/long maxX, long maxY, Zone... zones) {
+        //what the heck?
         long maxX1 = maxX;
         long maxY1 = maxY;
         Collections.addAll(this.zones, zones);

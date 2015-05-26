@@ -48,7 +48,7 @@ public abstract class Goal<T> implements Comparable<Goal<T>>{
      * @return The expected benefit.
      * @see ftc.team6460.javadeck.api.planner Information on cost and benefit units
      */
-    public abstract double computeBenefit(T state, GoalPlanner g);
+    public abstract double computeBenefit(T state, GoalPlanner<T> g);
 
     /**
      * Acts when the robot is in position at this goal. This should take any actions to be done when at the goal, such
@@ -57,6 +57,6 @@ public abstract class Goal<T> implements Comparable<Goal<T>>{
      * @param pos   The current computed robot position.
      * @param state The robot's current state.
      */
-    public abstract void act(RobotPosition pos, T state, GoalPlanner g);
+    public abstract void act(RobotPosition pos, T state, GoalPlanner<T> g);
 
 }

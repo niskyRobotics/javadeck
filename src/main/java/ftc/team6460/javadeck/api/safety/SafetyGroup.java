@@ -26,8 +26,6 @@ package ftc.team6460.javadeck.api.safety;
 
 import ftc.team6460.javadeck.api.Maintainable;
 import ftc.team6460.javadeck.api.peripheral.EffectorPeripheral;
-import ftc.team6460.javadeck.api.peripheral.PeripheralCommunicationException;
-import ftc.team6460.javadeck.api.peripheral.PeripheralInoperableException;
 
 import java.util.Set;
 import java.util.concurrent.Callable;
