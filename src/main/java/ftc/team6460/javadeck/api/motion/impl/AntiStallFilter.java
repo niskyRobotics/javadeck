@@ -96,6 +96,8 @@ public abstract class AntiStallFilter implements EncoderedMotor {
     public void resetEncoder() throws InterruptedException, PeripheralCommunicationException, PeripheralInoperableException {
         synchronized (this) {
             this.calibrate(0.0, null);
+            // at this point the values for the anti stall code will be very invalid and we want to avoid any weird issues.
+            // Reset the safety mechanism so it has a clean slate to work with.
             this.resetSafety();
         }
     }
@@ -126,7 +128,7 @@ public abstract class AntiStallFilter implements EncoderedMotor {
     }
 
     /**
-     * Constructs a new encodered motor.
+     * Constructs a new encodered motor. This motor will not join a safety group.
      *
      * @param antiStallThreshold The minimum encoder distance that is considered a non-stalled motor.
      * @param antiStallTimeout   How long encoder motion can remain under the threshold before a stall is considered, nanoseconds.
@@ -134,7 +136,7 @@ public abstract class AntiStallFilter implements EncoderedMotor {
      * @param encoderDirection   +1 if a positive power will cause the encoder reading to increase, -1 otherwise.
      */
     public AntiStallFilter(EncoderedMotor mtr, double antiStallThreshold, double antiStallTimeout, double maxStallPower, int encoderDirection) {
-
+        // leave safety group null
         this.antiStallThreshold = antiStallThreshold;
         this.antiStallTimeout = antiStallTimeout;
         this.maxStallPower = maxStallPower;

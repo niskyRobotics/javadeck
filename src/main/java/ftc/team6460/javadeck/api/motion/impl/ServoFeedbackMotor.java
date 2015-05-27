@@ -25,7 +25,6 @@
 package ftc.team6460.javadeck.api.motion.impl;
 
 import ftc.team6460.javadeck.api.motion.EncoderedMotor;
-import ftc.team6460.javadeck.api.motion.impl.AntiStallFilter;
 import ftc.team6460.javadeck.api.peripheral.EffectorPeripheral;
 import ftc.team6460.javadeck.api.peripheral.PeripheralCommunicationException;
 import ftc.team6460.javadeck.api.peripheral.PeripheralInoperableException;
@@ -54,6 +53,7 @@ public abstract class ServoFeedbackMotor implements EffectorPeripheral<Double>, 
 
     @Override
     public void writeFast(Double input) throws InterruptedException, PeripheralCommunicationException, PeripheralInoperableException {
+        // simply delegate
         this.doWrite(input);
     }
 
@@ -134,7 +134,7 @@ public abstract class ServoFeedbackMotor implements EffectorPeripheral<Double>, 
     }
 
     protected void doWrite(double val) {
-
+        // doWrite actually calculates servo control. No delegation straight to the physical motor.
         synchronized (this) {
             this.currentGoal = val;
             this.isActivelySeeking = true;
