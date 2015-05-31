@@ -31,7 +31,10 @@ import ftc.team6460.javadeck.api.planner.RelativePosition;
 import java.util.*;
 
 /**
- * Created by hexafraction on 4/11/15.
+ * Describes a field of waypoints and zones that a robot may navigate.
+ * <p>
+ * Dimensions are fixed-point decimal, defined
+ * such that a value of 1 describes an offset of 1mm.
  */
 public class Field {
     private final Set<Zone> zones = new HashSet<>();
@@ -42,17 +45,22 @@ public class Field {
     }
 
     /**
-     * The numeric values are fixed-point decimal, defined
-     * such that a value of 1 describes an offset of 1mm.
+     * Constructs a new field.
+     *
+     * @param zones The zones to add to this field.
      */
 
-    public Field(/*what the heck?*/long maxX, long maxY, Zone... zones) {
-        //what the heck?
-        long maxX1 = maxX;
-        long maxY1 = maxY;
+    public Field(Zone... zones) {
         Collections.addAll(this.zones, zones);
     }
 
+    /**
+     * Adds a new waypoint to this field.
+     *
+     * @param waypoint The waypoint to add
+     * @throws DuplicateWaypointException If a waypoint at exactly this location already exists.
+     * @throws ObstacleException          If the waypoint being added lies within a forbidden zone.
+     */
     public void addWaypoint(Waypoint waypoint) throws DuplicateWaypointException, ObstacleException {
         if (waypoints.contains(waypoint)) {
             throw new DuplicateWaypointException("Duplicate: " + waypoint.toString());
@@ -71,6 +79,13 @@ public class Field {
     }
 
     // O(N) but who cares?
+
+    /**
+     * Returns the nearest waypoint to the given point, using a euclidean metric.
+     *
+     * @param pos The point for which to find the closest waypoint.
+     * @return The closest waypoint, or <code>null</code> if there are no waypoints on this field.
+     */
     public Waypoint getNearest(Point2D pos) {
         Waypoint best = null;
         double bestDistance = Double.POSITIVE_INFINITY;
@@ -85,6 +100,15 @@ public class Field {
     }
 
     // Dijkstra's algorithm
+
+    /**
+     * Finds the shortest path (by Euclidean metric) between the two endpoints, using Dijkstra's Algorithm.
+     *
+     * @param start The waypoint at which to start.
+     * @param end   The waypoint at which to end.
+     * @return A list containing waypoints in the appropriate order.
+     * @throws ObstacleException If no path is found.
+     */
     public List<Waypoint> findPath(Waypoint start, Waypoint end) throws ObstacleException {
         // tradeoff: decrease priority is not well implemented in the Java API, so we'll just do it in O(V) instead, manually.
         // This should only happen rarely.
@@ -126,7 +150,7 @@ public class Field {
         do {
             path.add(t);
             t = t.tag.prev;
-            if(t==null) {
+            if (t == null) {
                 throw new ObstacleException("No path found.");
             }
         } while (t != end);
@@ -134,16 +158,26 @@ public class Field {
         return path;
     }
 
-    public void removeWaypoint(Waypoint w){
+    /**
+     * Removes a waypoint and disconnects it from its neighbors.
+     *
+     * @param w The waypoint to remove.
+     */
+    public void removeWaypoint(Waypoint w) {
         waypoints.remove(w);
         Set<Waypoint> neighbors = new HashSet<>();
         neighbors.addAll(w.getNeighbors());
-        for(Waypoint n : neighbors){
+        for (Waypoint n : neighbors) {
             n.disconnect(w);
             w.disconnect(n);
         }
     }
 
+    /**
+     * Adds a graph adjacency between two waypoints, so that {@link Field#findPath(Waypoint, Waypoint)} can take a path between these two waypoints.
+     *
+     * @throws ObstacleException If the connection crosses an obstacle or illegal zone.
+     */
     public void addConnection(Waypoint w1, Waypoint w2) throws ObstacleException {
         if (w1.equals(w2)) {
             throw new IllegalArgumentException("connection to self");
@@ -160,24 +194,35 @@ public class Field {
         w2.addNeighbor(w1);
     }
 
+    /**
+     * Gets an iterable set of the waypoints, in no particular order.
+     */
     public Iterable<Waypoint> getWaypoints() {
         return Collections.unmodifiableSet(waypoints);
     }
 
-    public List<RelativePosition> findPath(ImmutableRobotPosition s, ImmutableRobotPosition e) throws ObstacleException {
-        Waypoint st = getNearest(Point2D.fromRobotPosition(s));
-        Waypoint fin = getNearest(Point2D.fromRobotPosition(e));
+    /**
+     * Finds the shortest path (by Euclidean metric) between the two endpoints, using Dijkstra's Algorithm.
+     *
+     * @param start The location at which to start.
+     * @param end   The location at which to end.
+     * @return A list containing travel moves in the appropriate order.
+     * @throws ObstacleException If no path is found.
+     */
+    public List<RelativePosition> findPath(ImmutableRobotPosition start, ImmutableRobotPosition end) throws ObstacleException {
+        Waypoint st = getNearest(Point2D.fromRobotPosition(start));
+        Waypoint fin = getNearest(Point2D.fromRobotPosition(end));
         List<RelativePosition> rV = new ArrayList<>();
         List<Waypoint> waypoints = findPath(st, fin);
-        ImmutableRobotPosition current = s;
-        for(Waypoint w : waypoints){
+        ImmutableRobotPosition current = start;
+        for (Waypoint w : waypoints) {
             ImmutableRobotPosition n = w.getPos().getAsRobotPos();
             RelativePosition rp = RelativePosition.between(current, n);
             rV.add(rp);
             current = rp.apply(current).materialize();
 
         }
-        rV.add(RelativePosition.between(current, e));
+        rV.add(RelativePosition.between(current, end));
         // finding will return both endpoints in correct order
         //List<Waypoint>
         return rV;

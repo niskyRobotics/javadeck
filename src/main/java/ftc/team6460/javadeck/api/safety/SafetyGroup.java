@@ -33,7 +33,7 @@ import java.util.concurrent.ConcurrentSkipListSet;
 
 /**
  * Represents a group of devices that should shut down if one of them fails, or if an external trigger is triggered.
- * <p/>
+ *
  * Safety shutdowns remain in place for as long as the timeout specified.
  */
 public class SafetyGroup implements Maintainable {

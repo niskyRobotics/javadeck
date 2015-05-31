@@ -24,7 +24,7 @@ public final class GeometryUtils {
      * @param p0 Point defining line
      * @param p1 Point defining line
      * @param p2 Point to test
-     * @return >0 for p2 left of the line through p0 and p1, <0 for p2 right of line, 0 for p2 on line
+     * @return &gt;0 for p2 left of the line through p0 and p1, &lt;0 for p2 right of line, 0 for p2 on line
      */
     public static long isLeft(Point2D p0, Point2D p1, Point2D p2) {
         return ((p1.x - p0.x) * (p2.y - p0.y)

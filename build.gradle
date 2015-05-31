@@ -1,5 +1,5 @@
 apply plugin: 'java'
-
+version = '0.1-alpha-1'
 buildscript {
     repositories {
         mavenCentral()
@@ -20,7 +20,23 @@ dependencies {
     compile 'net.sourceforge.streamsupport:streamsupport:1.2.1'
 }
 
-
+task fatJar(type: Jar) {
+    manifest {
+        attributes 'Implementation-Title': 'JavaDeck for FTC Robotics',
+                'Implementation-Version': version
+    }
+    baseName = project.name + '-all'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+task sourcesJar(type: Jar) {
+    classifier 'sources'
+    from sourceSets.main.allSource
+}
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier 'javadoc'
+    from javadoc.destinationDir
+}
 apply plugin: 'me.tatarka.retrolambda'
 
 retrolambda {

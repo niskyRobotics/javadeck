@@ -26,7 +26,7 @@ package ftc.team6460.javadeck.api.planner;
 
 /**
  * Describes a peripheral that can determine the probability of the robot to be at any given point on the field.
- * <p/>
+ *
  * Likelihoods do not need to form a probability distribution (i.e. sum or integrate to 1) over the field. For example,
  * if the sensor reading makes it certain that the robot is in a given area, the likelihoods for every point in that area should be 1.
  */

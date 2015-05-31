@@ -26,7 +26,6 @@ package ftc.team6460.javadeck.api.planner;
 
 /**
  * Describes a peripheral that can detect imminent obstacles.
- * <p/>
  */
 public interface ObstacleSensor {
     /**
