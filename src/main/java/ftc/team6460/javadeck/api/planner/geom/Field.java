@@ -28,6 +28,7 @@ import ftc.team6460.javadeck.api.planner.ImmutableRobotPosition;
 import ftc.team6460.javadeck.api.planner.ObstacleException;
 import ftc.team6460.javadeck.api.planner.RelativePosition;
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -232,7 +233,7 @@ public class Field {
         ZONE_COMMON, ZONE_ALLIANCE, ZONE_PERSONAL, ZONE_ILLEGAL, ZONE_OBSTACLE
     }
 
-    private static class WaypointComparator implements Comparator<Waypoint> {
+    private static class WaypointComparator implements Comparator<Waypoint>, Serializable {
         @Override
         public int compare(Waypoint w1, Waypoint w2) {
             return Double.compare(w1.tag.dist, w2.tag.dist);

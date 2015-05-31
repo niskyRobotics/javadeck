@@ -29,6 +29,7 @@ import java8.util.stream.StreamSupport;
 
 import java.util.*;
 import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Contains a planner for goals.
@@ -63,6 +64,7 @@ public class GoalPlanner<T> {
      */
     public synchronized void addGoal(Goal<T> goal) {
         goals.add(goal);
+        // ignore return value
         newGoalNotifier.offer(new Object());
     }
 
@@ -114,7 +116,7 @@ public class GoalPlanner<T> {
                     }
                     LocationCandidate ourPositionAfter = StreamSupport.stream(GoalPlanner.this.integrator.getCandidates(minCorr))
                             .reduce(null, (c1, c2) -> c1.getCorrelationStrength() >= c2.getCorrelationStrength() ? c1 : c2);
-                    if (ourPosition == null) {
+                    if (ourPositionAfter == null) {
                         goal.act(drive.getCurrentPosition(), GoalPlanner.this.currentState, GoalPlanner.this);
                     } else {
                         goal.act(ourPositionAfter.getPosition(), GoalPlanner.this.currentState, GoalPlanner.this);
@@ -128,7 +130,7 @@ public class GoalPlanner<T> {
                 }
             } catch (NoSuchElementException e) {
                 try {
-                    newGoalNotifier.take();
+                    newGoalNotifier.poll(1000, TimeUnit.MILLISECONDS);
                 } catch (InterruptedException e1) {
                     Thread.currentThread().interrupt();
                 }

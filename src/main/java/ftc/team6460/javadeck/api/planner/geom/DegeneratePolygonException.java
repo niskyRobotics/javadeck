@@ -27,7 +27,7 @@ package ftc.team6460.javadeck.api.planner.geom;
 /**
  * Created by hexafraction on 4/10/15.
  */
-public class DegeneratePolygonException extends Throwable {
+public class DegeneratePolygonException extends Exception {
     public DegeneratePolygonException() {
     }
 
@@ -43,7 +43,5 @@ public class DegeneratePolygonException extends Throwable {
         super(cause);
     }
 
-    public DegeneratePolygonException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
-    }
+
 }

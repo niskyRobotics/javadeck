@@ -147,7 +147,7 @@ public class DijkstraTest extends BasicGame {
     public static void main(String[] args) throws DuplicateWaypointException, ObstacleException {
         System.setProperty("java.library.path", "mapeditor/target;mapeditor/target/natives");
         System.setProperty("org.lwjgl.librarypath", new File("mapeditor/target/natives").getAbsolutePath());
-        f = new Field(1000, 1000);
+        f = new Field();
         Waypoint[][] test = new Waypoint[20][20];
         String[][] disp = new String[20][20];
 

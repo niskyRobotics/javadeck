@@ -186,9 +186,9 @@ public class WeightedAveragePositionIntegrator implements PositionIntegrator {
         if (max < (correlatorMinSNR * getSafeAvg(x, y - 1)) && max < islandMinAbsolute) return false;
         if (max < (correlatorMinSNR * getSafeAvg(x, y)) && max < islandMinAbsolute) return false;
         if (max < (correlatorMinSNR * getSafeAvg(x, y + 1)) && max < islandMinAbsolute) return false;
-        if (max < (correlatorMinSNR * getSafeAvg(x + 1, y - 1)) && max < islandMinAbsolute) return false;
-        if (max < (correlatorMinSNR * getSafeAvg(x + 1, y)) && max < islandMinAbsolute) return false;
-        if (max < (correlatorMinSNR * getSafeAvg(x + 1, y + 1)) && max < islandMinAbsolute) return false;
+        if (max < (correlatorMinSNR * getSafeAvg(x - 1, y - 1)) && max < islandMinAbsolute) return false;
+        if (max < (correlatorMinSNR * getSafeAvg(x - 1, y)) && max < islandMinAbsolute) return false;
+        if (max < (correlatorMinSNR * getSafeAvg(x - 1, y + 1)) && max < islandMinAbsolute) return false;
 
         return true;
     }

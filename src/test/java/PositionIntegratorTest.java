@@ -50,7 +50,7 @@ public class PositionIntegratorTest {
         Assert.assertEquals(cands.get(0).getPosition().getX(), Math.PI, 0.02);
         Assert.assertEquals(cands.get(0).getPosition().getY(), Math.E, 0.02);
         // System.out.println(cands.get(0));
-        long t = System.currentTimeMillis();
+        //long t = System.currentTimeMillis();
         int iters = 0;
         Random r = new Random();
         for (int i = 0; i < 10; i++) {
@@ -108,7 +108,7 @@ public class PositionIntegratorTest {
     }
 
 
-    private class FakeXHill implements Sensor {
+    private static class FakeXHill implements Sensor {
         private double pos;
 
         public FakeXHill(double pos) {
@@ -153,7 +153,7 @@ public class PositionIntegratorTest {
         }
     }
 
-    private class FakeYHill implements Sensor {
+    private static class FakeYHill implements Sensor {
         public void setPos(double pos) {
             this.pos = pos;
         }

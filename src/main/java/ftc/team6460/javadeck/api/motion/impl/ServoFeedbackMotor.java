@@ -31,6 +31,8 @@ import ftc.team6460.javadeck.api.peripheral.PeripheralInoperableException;
 import ftc.team6460.javadeck.api.peripheral.SensorPeripheral;
 import ftc.team6460.javadeck.api.safety.SafetyGroup;
 
+import java.util.concurrent.SynchronousQueue;
+
 /**
  * A motor that can reach a specific absolute position, and optionally maintain it (compensating for external forces as needed)
  */
@@ -57,12 +59,14 @@ public abstract class ServoFeedbackMotor implements EffectorPeripheral<Double>, 
         this.doWrite(input);
     }
 
+
+    SynchronousQueue<Object> servoFinishedMvmtSynchronizer = new SynchronousQueue<>();
+
     @Override
     public void write(Double input) throws InterruptedException, PeripheralCommunicationException, PeripheralInoperableException {
         this.doWrite(input);
-        while (Math.abs(this.currentGoal - this.read(null)) > this.maxErrorTolerance) {
-            Thread.sleep(100);
-        }
+        // wait for a movement to complete.
+        servoFinishedMvmtSynchronizer.take();
     }
 
     @Override
@@ -78,21 +82,26 @@ public abstract class ServoFeedbackMotor implements EffectorPeripheral<Double>, 
                     double power = (currentGoal - currentPos) * correctionFactor;
                     if (Math.abs(currentGoal - currentPos) < maxErrorTolerance) {
                         power = 0;
+                        // ignore return value
+                        servoFinishedMvmtSynchronizer.offer(new Object());
                     }
                     int newDirectionSignum = (int) Math.signum(power);
                     if (newDirectionSignum == -this.currentDirectionSignum || newDirectionSignum == 0) {
-                        if (holdAtPosition) {
-                        } else {
+                        if (!holdAtPosition) {
                             this.isActivelySeeking = false;
                             power = 0;
+                            servoFinishedMvmtSynchronizer.offer(new Object());
+                            return;
                         }
                     }
                     power = Math.signum(power) * Math.max(Math.abs(maxPower), Math.abs(power));
                     currentDirectionSignum = (int) Math.signum(power);
                     inner.writeFast(power);
 
-                } catch (Exception e) {
-                    // pass for now
+                } catch (RuntimeException e) {
+                    throw e;
+                } catch (InterruptedException | PeripheralInoperableException | PeripheralCommunicationException e) {
+                    // todo logging mechanism
                 }
             } else {
                 return;
@@ -129,7 +138,9 @@ public abstract class ServoFeedbackMotor implements EffectorPeripheral<Double>, 
 
     @Override
     public void safetyShutdown(long nanos) throws InterruptedException, PeripheralCommunicationException, PeripheralInoperableException {
-        this.isActivelySeeking = false;
+        synchronized (this) {
+            this.isActivelySeeking = false;
+        }
         inner.safetyShutdown(nanos);
     }
 

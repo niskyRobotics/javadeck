@@ -42,12 +42,12 @@ public final class GeometryUtils {
     }
 
 
-    public static double euclideanLength(Segment s){
+    public static double euclideanLength(Segment s) {
         return euclideanDistance(s.p0, s.p1);
     }
 
     public static double euclideanDistance(Point2D p0, Point2D p1) {
-        return Math.sqrt((p1.x-p0.x)*(p1.x-p0.x) + (p1.y-p0.y)*(p1.y-p0.y));
+        return Math.sqrt((p1.x - p0.x) * (p1.x - p0.x) + (p1.y - p0.y) * (p1.y - p0.y));
     }
 
     /**
@@ -96,11 +96,11 @@ public final class GeometryUtils {
             float t0, t1;                    // endpoints of s1 in eqn for s2
             Point2D w2 = new Point2D(s1.p1.x - s2.p0.x, s1.p1.y - s2.p0.y);
             if (v.x == 0) {
-                t0 = w.y / v.y;
-                t1 = w2.y / v.y;
+                t0 = (float) w.y / v.y;
+                t1 = (float) w2.y / v.y;
             } else {
-                t0 = w.x / v.x;
-                t1 = w2.x / v.x;
+                t0 = (float) w.x / v.x;
+                t1 = (float) w2.x / v.x;
             }
             if (t0 > t1) {                   // must have t0 smaller than t1
                 float t = t0;
@@ -112,7 +112,7 @@ public final class GeometryUtils {
             }
             t0 = t0 < 0 ? 0 : t0;               // clip to min 0
             t1 = t1 > 1 ? 1 : t1;               // clip to max 1
-            if (t0 == t1) {                  // intersect is a point
+            if (Math.abs(t0-t1)<0.0001) {                  // intersect is a point
                 //*I0 = s2.p0 +  t0 * v;
                 return 1;
             }

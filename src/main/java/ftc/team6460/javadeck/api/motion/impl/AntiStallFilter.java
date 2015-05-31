@@ -32,7 +32,6 @@ import ftc.team6460.javadeck.api.safety.SafetyGroup;
 /**
  * Represents a motor with an encoder. The encoder is currently assumed to be relative and resettable. If it is not, the implementer must implement appropriate logic.
  * Subclasses must be thread-safe.
- *
  */
 
 // TODO refactor heck out of this class
@@ -47,7 +46,7 @@ public abstract class AntiStallFilter implements EncoderedMotor {
      * cause the same linear motion after their gearing is considered. This may require instances of this to have fields describing any gearing or other considerations.
      *
      * @param input The speed for the motor to reach.
-     * @throws InterruptedException                                                  If interrupted waiting for the effector to reach its target value.
+     * @throws InterruptedException             If interrupted waiting for the effector to reach its target value.
      * @throws PeripheralCommunicationException If the motor cannot be communicated with.
      * @throws PeripheralInoperableException    If the motor is inoperable.
      */
@@ -110,7 +109,7 @@ public abstract class AntiStallFilter implements EncoderedMotor {
     /**
      * Constructs a new encodered motor.
      *
-     * @param mtr The physical motor to use
+     * @param mtr                The physical motor to use
      * @param safetyGroup        The safety group to join.
      * @param antiStallThreshold The minimum encoder distance that is considered a non-stalled motor.
      * @param antiStallTimeout   How long encoder motion can remain under the threshold before a stall is considered, nanoseconds.
@@ -150,13 +149,17 @@ public abstract class AntiStallFilter implements EncoderedMotor {
 
     @Override
     public void setup() {
-        encoderLastTime = System.nanoTime();
+        synchronized (this) {
+            encoderLastTime = System.nanoTime();
+        }
     }
 
     /*package-private*/ void resetSafety() {
         try {
-            encoderLastPosition = this.read(null);
-            encoderLastTime = System.nanoTime();
+            synchronized (this) {
+                encoderLastPosition = this.read(null);
+                encoderLastTime = System.nanoTime();
+            }
         } catch (Throwable e) {
             // noop
         }
@@ -169,8 +172,10 @@ public abstract class AntiStallFilter implements EncoderedMotor {
         }
         if (this.earliestReactivation > System.nanoTime()) {
             try {
-                encoderLastPosition = this.read(null);
-                encoderLastTime = System.nanoTime();
+                synchronized (this) {
+                    encoderLastPosition = this.read(null);
+                    encoderLastTime = System.nanoTime();
+                }
             } catch (Throwable e) {
                 // noop
             }
@@ -223,7 +228,6 @@ public abstract class AntiStallFilter implements EncoderedMotor {
             }
         }
     }
-
 
 
 }

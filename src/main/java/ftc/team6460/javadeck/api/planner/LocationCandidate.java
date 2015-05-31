@@ -24,6 +24,8 @@
 
 package ftc.team6460.javadeck.api.planner;
 
+import java.io.Serializable;
+
 /**
  * Describes a candidate location
  */
@@ -31,7 +33,7 @@ public class LocationCandidate {
     private final ImmutableRobotPosition position;
     private final double correlationStrength;
     public static int compareDescending(LocationCandidate o1, LocationCandidate o2) {
-        return -Double.compare(o1.getCorrelationStrength(), o2.getCorrelationStrength());
+        return Double.compare(o2.getCorrelationStrength(), o1.getCorrelationStrength());
     }
     public ImmutableRobotPosition getPosition() {
         return position;
@@ -54,7 +56,7 @@ public class LocationCandidate {
         this.position = position;
         this.correlationStrength = correlationStrength;
     }
-    public static class Comparator implements java.util.Comparator<LocationCandidate> {
+    public static class Comparator implements java.util.Comparator<LocationCandidate>, Serializable {
         @Override
         public int compare(LocationCandidate o1, LocationCandidate o2) {
             return Double.compare(o1.getCorrelationStrength(), o2.getCorrelationStrength());

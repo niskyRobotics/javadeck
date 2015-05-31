@@ -37,7 +37,7 @@ import java.util.List;
 public class DijkstraTest {
     @Test
     public void testDijkstras() throws DuplicateWaypointException, ObstacleException {
-        Field f = new Field(10_000, 10_000);
+        Field f = new Field();
         Waypoint[][] test = new Waypoint[20][20];
         String[][] disp = new String[20][20];
 

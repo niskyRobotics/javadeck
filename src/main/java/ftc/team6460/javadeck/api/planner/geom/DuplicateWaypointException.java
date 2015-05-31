@@ -27,7 +27,7 @@ package ftc.team6460.javadeck.api.planner.geom;
 /**
  * Created by hexafraction on 4/11/15.
  */
-public class DuplicateWaypointException extends Throwable {
+public class DuplicateWaypointException extends Exception {
     public DuplicateWaypointException() {
     }
 
@@ -43,7 +43,5 @@ public class DuplicateWaypointException extends Throwable {
         super(cause);
     }
 
-    public DuplicateWaypointException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
-    }
+
 }
