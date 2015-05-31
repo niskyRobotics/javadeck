@@ -25,8 +25,10 @@
 package ftc.team6460.javadeck.api.planner;
 
 import ftc.team6460.javadeck.api.planner.geom.Field;
+import java8.util.stream.StreamSupport;
 
 import java.util.*;
+import java.util.concurrent.SynchronousQueue;
 
 /**
  * Contains a planner for goals.
@@ -61,6 +63,7 @@ public class GoalPlanner<T> {
      */
     public synchronized void addGoal(Goal<T> goal) {
         goals.add(goal);
+        newGoalNotifier.offer(new Object());
     }
 
     /**
@@ -70,58 +73,81 @@ public class GoalPlanner<T> {
         goals.remove(goal);
     }
 
-    protected synchronized Goal<T> getBestGoal() {
-        Collections.sort(goals, (o1, o2) -> Double.compare(o1.computeBenefit(GoalPlanner.this.currentState, GoalPlanner.this),
-                o2.computeBenefit(GoalPlanner.this.currentState, GoalPlanner.this)));
-        return goals.get(goals.size() - 1);
+    protected synchronized Goal<T> getBestGoal() throws NoSuchElementException {
+        return StreamSupport.stream(goals).reduce(
+                (goal1, goal2) ->
+                        goal1.computeBenefit(currentState, this) >= goal2.computeBenefit(currentState, this)
+                                ? goal1 : goal2)
+                .get();
 
     }
-
+    private volatile boolean run = true;
     public synchronized void start() {
         if (run) {
             return;
         }
         run = true;
-        new Thread(new PlannerRunnable(), "goalplanner-" + this.hashCode()).start();
+        new Thread(this::runLoop, "goalplanner-" + this.hashCode()).start();
     }
 
-    public synchronized void stop() {
-        this.run = false;
-    }
-
-    private class PlannerRunnable implements Runnable {
-
-        @Override
-        public void run() {
-            while (run) {
+    public void runLoop() {
+        while (run) {
+            try {
                 Goal<T> goal = GoalPlanner.this.getBestGoal();
-                List<LocationCandidate> bestMatches = GoalPlanner.this.integrator.getCandidates(minCorr);
-                Collections.sort(bestMatches, new LocationCandidate.Comparator());
+                LocationCandidate ourPosition = StreamSupport.stream(GoalPlanner.this.integrator.getCandidates(minCorr))
+                        .reduce(null, (c1, c2) -> c1.getCorrelationStrength() >= c2.getCorrelationStrength() ? c1 : c2);
+                if (ourPosition == null) {
+                    // sleep a second
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+                    continue;
+                }
+
                 try {
-                    List<RelativePosition> steps = GoalPlanner.this.field.findPath(bestMatches.get(bestMatches.size() - 1).getPosition(),
+                    List<RelativePosition> steps = GoalPlanner.this.field.findPath(ourPosition.getPosition(),
                             goal.getLocation());
                     for (RelativePosition rp : steps) {
                         drive.move(rp, false);
                     }
-                    List<LocationCandidate> bestMatchesAfter;
-                    bestMatchesAfter = GoalPlanner.this.integrator.getCandidates(minCorr);
-                    Collections.sort(bestMatchesAfter, new LocationCandidate.Comparator());
-                    if (bestMatchesAfter.size() > 0)
-                        goal.act(bestMatchesAfter.get(bestMatchesAfter.size() - 1).getPosition(), GoalPlanner.this.currentState, GoalPlanner.this);
-                    else
+                    LocationCandidate ourPositionAfter = StreamSupport.stream(GoalPlanner.this.integrator.getCandidates(minCorr))
+                            .reduce(null, (c1, c2) -> c1.getCorrelationStrength() >= c2.getCorrelationStrength() ? c1 : c2);
+                    if (ourPosition == null) {
                         goal.act(drive.getCurrentPosition(), GoalPlanner.this.currentState, GoalPlanner.this);
+                    } else {
+                        goal.act(ourPositionAfter.getPosition(), GoalPlanner.this.currentState, GoalPlanner.this);
+                    }
+
+
                 } catch (ObstacleException e) {
                     GoalPlanner.this.removeGoal(goal);
                 } catch (RobotHardwareException e) {
                     //e.printStackTrace();
                 }
+            } catch (NoSuchElementException e) {
+                try {
+                    newGoalNotifier.take();
+                } catch (InterruptedException e1) {
+                    Thread.currentThread().interrupt();
+                }
+                continue;
             }
         }
-
-
     }
 
-    private volatile boolean run = true;
+
+
+    private SynchronousQueue<Object> newGoalNotifier = new SynchronousQueue<>();
+
+    public synchronized void stop() {
+        this.run = false;
+    }
+
+
+
+
 
 
 }
