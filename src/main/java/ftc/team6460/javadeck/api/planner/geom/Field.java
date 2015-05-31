@@ -202,12 +202,9 @@ public class Field {
 
         private final ZoneMode mode;
 
-        private final Set<Point2D> waypoints = new TreeSet<>(new Comparator<Point2D>() {
-            @Override
-            public int compare(Point2D o1, Point2D o2) {
-                int xCompRes = Long.compare(o1.getX(), o2.getX());
-                return (xCompRes == 0 ? Long.compare(o1.getY(), o2.getY()) : xCompRes);
-            }
+        private final Set<Point2D> waypoints = new TreeSet<>((o1, o2) -> {
+            int xCompRes = Long.compare(o1.getX(), o2.getX());
+            return (xCompRes == 0 ? Long.compare(o1.getY(), o2.getY()) : xCompRes);
         });
 
         /**

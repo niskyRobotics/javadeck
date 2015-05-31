@@ -31,6 +31,8 @@ package ftc.team6460.javadeck.api.planner;
  *
  */
 public abstract class Goal<T> implements Comparable<Goal<T>>{
+
+
     private final ImmutableRobotPosition location;
 
     protected Goal(ImmutableRobotPosition location) {

@@ -53,14 +53,10 @@ public abstract class FtcBaseOpMode /*extends OpMode*/ {
     }
 
     public void start() {
-        new Thread(new Runnable() {
-            public void run() {
-
-                doActions();
-            }
-        }).start();
+        new Thread(this::doActions).start();
 
     }
+
 
     public void loop() {
         // update all motors and sensors

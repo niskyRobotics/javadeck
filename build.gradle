@@ -1,14 +1,29 @@
 apply plugin: 'java'
-apply plugin: 'idea'
-sourceCompatibility = 1.7
-version = '1.0'
 
-repositories {
-    maven {
-        url "http://repo1.maven.org/maven2"
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'me.tatarka:gradle-retrolambda:3.1.0'
     }
 }
-dependencies {
-    testCompile group: 'junit', name: 'junit', version: '4.11'
 
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    //classpath 'me.tatarka:gradle-retrolambda:3.1.0'
+    testCompile 'junit:junit:4.12'
+    compile 'net.sourceforge.streamsupport:streamsupport:1.2.1'
+}
+
+
+apply plugin: 'me.tatarka.retrolambda'
+
+retrolambda {
+    javaVersion JavaVersion.VERSION_1_7
+    oldJdk '/usr/lib/jvm/java-7-openjdk-amd64'
 }

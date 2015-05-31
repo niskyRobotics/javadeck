@@ -71,14 +71,8 @@ public class GoalPlanner<T> {
     }
 
     protected synchronized Goal<T> getBestGoal() {
-        Collections.sort(goals, new Comparator<Goal<T>>() {
-            @Override
-            public int compare(Goal<T> o1, Goal<T> o2) {
-                return Double.compare(o1.computeBenefit(GoalPlanner.this.currentState, GoalPlanner.this),
-                        o2.computeBenefit(GoalPlanner.this.currentState, GoalPlanner.this));
-
-            }
-        });
+        Collections.sort(goals, (o1, o2) -> Double.compare(o1.computeBenefit(GoalPlanner.this.currentState, GoalPlanner.this),
+                o2.computeBenefit(GoalPlanner.this.currentState, GoalPlanner.this)));
         return goals.get(goals.size() - 1);
 
     }

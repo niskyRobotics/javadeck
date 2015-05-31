@@ -30,7 +30,9 @@ package ftc.team6460.javadeck.api.planner;
 public class LocationCandidate {
     private final ImmutableRobotPosition position;
     private final double correlationStrength;
-
+    public static int compareDescending(LocationCandidate o1, LocationCandidate o2) {
+        return -Double.compare(o1.getCorrelationStrength(), o2.getCorrelationStrength());
+    }
     public ImmutableRobotPosition getPosition() {
         return position;
     }
