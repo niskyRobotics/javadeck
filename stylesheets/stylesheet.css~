@@ -709,7 +709,7 @@ h6:before {
 #main-content p {
   margin-bottom: 20px;
   padding-left: 1.5em;
-  font-family: 'Titillium Web', sans-serif;
+font-family: 'Titillium Web', sans-serif;
 }
 
 a {
