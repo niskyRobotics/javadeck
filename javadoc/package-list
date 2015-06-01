@@ -1,0 +1,9 @@
+ftc.team6460.javadeck.api
+ftc.team6460.javadeck.api.motion
+ftc.team6460.javadeck.api.motion.impl
+ftc.team6460.javadeck.api.peripheral
+ftc.team6460.javadeck.api.peripheral.util
+ftc.team6460.javadeck.api.planner
+ftc.team6460.javadeck.api.planner.geom
+ftc.team6460.javadeck.api.safety
+ftc.team6460.javadeck.api.state.ftc

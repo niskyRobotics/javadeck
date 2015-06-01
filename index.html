@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <meta charset='utf-8'>
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -8,69 +8,108 @@
     <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
     <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
     <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
-<link href='http://fonts.googleapis.com/css?family=Titillium+Web' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Titillium+Web' rel='stylesheet' type='text/css'>
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
 
     <title>Javadeck by niskyRobotics</title>
-  </head>
+</head>
 
-  <body>
-    <header>
-      <div class="inner">
+<body>
+<header>
+    <div class="inner">
         <h1>Javadeck</h1>
+
         <h2>A robot motion planning system for the FTC runtime.</h2>
-        <a href="https://github.com/niskyRobotics/javadeck" class="button"><small>View project on</small> GitHub</a>
-      </div>
-    </header>
+        <a href="https://github.com/niskyRobotics/javadeck" class="button">
+            <small>View project on</small>
+            GitHub</a>
+    </div>
+</header>
 
-    <div id="content-wrapper">
-      <div class="inner clearfix">
+<div id="content-wrapper">
+    <div class="inner clearfix">
         <section id="main-content">
-          <h3>
-<a id="about" class="anchor" href="#about" aria-hidden="true"><span class="octicon octicon-link"></span></a>About</h3>
+            <h3>
+                <a id="about" class="anchor" href="#about" aria-hidden="true"><span class="octicon octicon-link"></span></a>About
+            </h3>
 
-<p>Javadeck, created by FTC team 6460 "RoboWarriors", is a framework for quickly getting started with extremely intelligent and complex robot behaviors, on top of the US FIRST Java SDK. It is currently a work in progress.</p>
-	          <h3>
-<a id="about" class="anchor" href="#features" aria-hidden="true"><span class="octicon octicon-link"></span></a>Features</h3>
-<h4>Realtime sensing and planning</h4><p>The planner dynamically chooses goals based on the current state. A simple yet powerful API allows for dynamically controlling, enabling, and disabling goals
-in order to complete advanced tasks, where goals may be mutually-exclusive with, or pre-requisites for other goals.</p>
-<h4>Precise sensor fusion</h4><p>A wide variety of sensors can be used for sensor fusion with a known field configuration. The dynamic integrators allow sensor input that is not necessarily a single location; sensors can "constrain" the robot to points, lines, curves, areas, or loci of any kind. This data can be used with the planner to make and execute decisions about movement.</p>
-<p>At the moment the implementation is numerical (and already blazing-fast!), but there are plans for an algebraic API.
-<h4>Advanced hardware control</h4><p>The API for hardware control is designed using OO principles and is both efficient and organized. Filters such as gearing ratios and safety control allow interoperability between hardware and software, even with external influences such as possible failures or specific gearing ratios affecting effector speeds.</p>
+            <p>Javadeck, created by FTC team 6460 "RoboWarriors", is a framework for quickly getting started with
+                extremely intelligent and complex robot behaviors, on top of the US FIRST Java SDK. It is currently a
+                work in progress.</p>
 
-<h3><a id="planned" class="anchor" href="#features" aria-hidden="true"><span class="octicon octicon-link"></span></a>Upcoming:</h3>
-<h4>Logging and error-handling</h4><p>Thanks to the telemetry feature of the new FTC SDK, it is now possible to send realtime data back to the driver station. Integration with a set of joystick buttons will allow for human choice in handling abnormal error conditions during a match.</p>
+            <h3>
+                <a id="about" class="anchor" href="#features" aria-hidden="true"><span
+                        class="octicon octicon-link"></span></a>Features</h3>
+            <h4>Realtime sensing and planning</h4>
+
+            <p>The planner dynamically chooses goals based on the current state. A simple yet powerful API allows for
+                dynamically controlling, enabling, and disabling goals
+                in order to complete advanced tasks, where goals may be mutually-exclusive with, or pre-requisites for
+                other goals.</p>
+
+            <h4>Extensibility</h4>
+
+            <p>Javadeck is written with the robot builder in mind&#151;the system is extensible to arbitrary hardware by
+                simply implementing the appropriate interfaces.</p>
+
+            <h4>Precise sensor fusion</h4>
+
+            <p>A wide variety of sensors can be used for sensor fusion with a known field configuration. The dynamic
+                integrators allow sensor input that is not necessarily a single location; sensors can "constrain" the
+                robot to points, lines, curves, areas, or loci of any kind. This data can be used with the planner to
+                make and execute decisions about movement.</p>
+
+            <p>At the moment the implementation is numerical (and already blazing-fast!), but there are plans for an
+                algebraic API.
+
+            <h4>Advanced hardware control</h4>
+
+            <p>The API for hardware control is designed using OO principles and is both efficient and organized. Filters
+                such as gearing ratios and safety control allow interoperability between hardware and software, even
+                with external influences such as possible failures or specific gearing ratios affecting effector
+                speeds.</p>
+
+            <h3><a id="planned" class="anchor" href="#planned" aria-hidden="true"><span
+                    class="octicon octicon-link"></span></a>Upcoming:</h3>
+            <h4>Logging and error-handling</h4>
+
+            <p>Thanks to the telemetry feature of the new FTC SDK, it is now possible to send realtime data back to the
+                driver station. Integration with a set of joystick buttons will allow for human choice in handling
+                abnormal error conditions during a match.</p>
 
 
         </section>
 
         <aside id="sidebar">
-          <a href="https://github.com/niskyRobotics/javadeck/zipball/master" class="button">
-            <small>Download</small>
-            .zip source
-          </a>
-          <a href="https://github.com/niskyRobotics/javadeck/tarball/master" class="button" style="font-size: 18px;">
-            <small>Download</small>
-            .tar.gz source
-          </a>
-          <a href="" class="button" style="background: transparent url(images/download-jar.png) 0 0 no-repeat;" disabled="disabled">
-            <small>Download</small>
-            .jar library
-          </a>
-<a href="" class="button" style="background: transparent url(images/javadoc.png) 0 0 no-repeat;" disabled="disabled">
-            <small>Read</small>
-            Javadoc
-          </a>
+            <a href="https://github.com/niskyRobotics/javadeck/zipball/master" class="button">
+                <small>Download</small>
+                .zip source
+            </a>
+            <a href="https://github.com/niskyRobotics/javadeck/tarball/master" class="button" style="font-size: 18px;">
+                <small>Download</small>
+                .tar.gz source
+            </a>
+            <a href="" class="button" style="background: transparent url(images/download-jar.png) 0 0 no-repeat;">
+                <small>Download</small>
+                .jar library
+            </a>
+            <a href="javadoc/index.html" class="button"
+               style="background: transparent url(images/javadoc.png) 0 0 no-repeat;">
+                <small>Read</small>
+                Javadoc
+            </a>
 
-          <p class="repo-owner"><a href="https://github.com/niskyRobotics/javadeck">Javadeck</a> is maintained by <a href="https://github.com/niskyRobotics">niskyRobotics</a>.</p>
+            <p class="repo-owner"><a href="https://github.com/niskyRobotics/javadeck">Javadeck</a> is maintained by <a
+                    href="https://github.com/niskyRobotics">niskyRobotics</a>.</p>
 
-          <p>This page is based on a modified version of the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a></p>
+            <p>This page is based on a modified version of the Architect theme by <a
+                    href="https://twitter.com/jasonlong">Jason Long</a></p>
         </aside>
-      </div>
     </div>
+</div>
 
-  
-  </body>
+
+</body>
 </html>
