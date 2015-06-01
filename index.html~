@@ -37,19 +37,15 @@
         <aside id="sidebar">
           <a href="https://github.com/niskyRobotics/javadeck/zipball/master" class="button">
             <small>Download</small>
-            .zip source
+            .zip file
           </a>
           <a href="https://github.com/niskyRobotics/javadeck/tarball/master" class="button">
             <small>Download</small>
-            .tar.gz source
+            .tar.gz file
           </a>
           <a href="" class="button" style="background: transparent url(images/download-jar.png) 0 0 no-repeat;" disabled="disabled">
             <small>Download</small>
             .jar library
-          </a>
-<a href="" class="button" style="background: transparent url(images/javadoc.png) 0 0 no-repeat;" disabled="disabled">
-            <small>Read</small>
-            Javadoc
           </a>
 
           <p class="repo-owner"><a href="https://github.com/niskyRobotics/javadeck">Javadeck</a> is maintained by <a href="https://github.com/niskyRobotics">niskyRobotics</a>.</p>
