@@ -2,7 +2,9 @@ apply plugin: 'java'
 version = '0.1-alpha-1'
 buildscript {
     repositories {
-        mavenCentral()
+        maven {
+            url "http://repo1.maven.org/maven2"
+        }
     }
 
     dependencies {
@@ -11,7 +13,9 @@ buildscript {
 }
 
 repositories {
-    mavenCentral()
+    maven {
+        url "http://repo1.maven.org/maven2"
+    }
 }
 //compileJava {
     //options.incremental = true
