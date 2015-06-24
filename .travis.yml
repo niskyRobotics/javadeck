@@ -1,3 +1,18 @@
 language: java
 jdk:
   - oraclejdk8
+env:
+  global:
+   # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
+   #   via the "travis encrypt" command using the project repo's public key
+   - secure: "StAnLYWixITEJUqOWw8R4/6vR8Z6wS2HQ8DZLjw1qYgAoHGtTKjULwTYnZRGaaqqmmOh1fM2BW12dSKXzNiY1myqbcNa3dY9/5NiZWUvUYJx0bqq0/F/vtD8EbnSFlkyrACn6rUfeYN7t3y4Hi2UF23s0jBqt+yMd9ijZ/z9Pwg="
+
+addons:
+  coverity_scan:
+    project:
+      name: "niskyRobotics/javadeck"
+      description: "Javadeck for FTC SDK"
+    notification_email: hexafraction@gmail.com
+    build_command_prepend: "gradle clean"
+    build_command:   "gradle compileRetrolambda"
+    branch_pattern: coverity-scan
