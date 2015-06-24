@@ -34,7 +34,7 @@ import java.util.*;
 public class PositionIntegratorTest {
 
     public static void main(String[] args) throws Exception {
-        new PositionIntegratorTest().interactiveTest();
+        new PositionIntegratorTest().testPositionalError();
     }
 
     @Test(timeout = 5000)
@@ -47,25 +47,25 @@ public class PositionIntegratorTest {
         PositionIntegrator integ = new WeightedAveragePositionIntegrator(sens, 10, 10);
         List<LocationCandidate> cands = integ.getCandidates(0.95);
         Collections.sort(cands, LocationCandidate::compareDescending);
+        //System.out.println(cands);
         Assert.assertEquals(cands.get(0).getPosition().getX(), Math.PI, 0.02);
         Assert.assertEquals(cands.get(0).getPosition().getY(), Math.E, 0.02);
         // System.out.println(cands.get(0));
         //long t = System.currentTimeMillis();
-        int iters = 0;
         Random r = new Random();
         for (int i = 0; i < 10; i++) {
-            iters++;
             double x = r.nextDouble() * 8 + 1;
             double y = r.nextDouble() * 8 + 1;
             xH.setPos(x);
             yH.setPos(y);
+
             Assert.assertEquals(1, xH.getLikelihood(x, 5), 0.1);
             List<LocationCandidate> res = integ.getCandidates(0.99);
-            Collections.sort(cands, LocationCandidate::compareDescending);
-
+            Collections.sort(res, LocationCandidate::compareDescending);
+            //System.out.println(res);
             ImmutableRobotPosition p = res.get(0).getPosition();
-            Assert.assertEquals(p.getX(), x, 0.15);
-            Assert.assertEquals(p.getY(), y, 0.15);
+            Assert.assertEquals(p.getX(), x, 0.05);
+            Assert.assertEquals(p.getY(), y, 0.05);
             // System.out.println(res.get(0));
             // System.out.println("ERR: " + Math.hypot(p.getX() - x, p.getY() - y) + "; MILLIS/ITER = " + (System.currentTimeMillis() - t) / iters);
 

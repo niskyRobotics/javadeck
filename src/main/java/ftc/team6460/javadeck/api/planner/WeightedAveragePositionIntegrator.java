@@ -72,7 +72,7 @@ public class WeightedAveragePositionIntegrator implements PositionIntegrator {
     private final double fieldY;
 
     public WeightedAveragePositionIntegrator(Collection<Sensor> sensors, double fieldX, double fieldY) {
-        this(sensors, fieldX, fieldY, 2, 5, 0.95, 0.75);
+        this(sensors, fieldX, fieldY, 7, 0.8, 0.95, 0.75);
     }
 
 
