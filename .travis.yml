@@ -1,1 +1,1 @@
-script: gradle compileJava compileRetrolambda check
+language: java
