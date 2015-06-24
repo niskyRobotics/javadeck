@@ -64,8 +64,8 @@ public class PositionIntegratorTest {
             Collections.sort(cands, LocationCandidate::compareDescending);
 
             ImmutableRobotPosition p = res.get(0).getPosition();
-            Assert.assertEquals(p.getX(), x, 0.05);
-            Assert.assertEquals(p.getY(), y, 0.05);
+            Assert.assertEquals(p.getX(), x, 0.15);
+            Assert.assertEquals(p.getY(), y, 0.15);
             // System.out.println(res.get(0));
             // System.out.println("ERR: " + Math.hypot(p.getX() - x, p.getY() - y) + "; MILLIS/ITER = " + (System.currentTimeMillis() - t) / iters);
 
