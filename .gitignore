@@ -16,3 +16,5 @@ javadeck.iml
 *.iml
 .idea/*
 *.iml
+gradlew
+gradlew.bat
